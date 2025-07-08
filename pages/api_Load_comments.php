@@ -56,22 +56,31 @@ foreach ($comments as $comment) {
             <div class="flex-shrink-0 me-2">
                 <img src="../assets/images/user/avatar-3.jpg" alt="user" class="rounded-circle" style="width: 32px; height: 32px;">
             </div>
-             <!-- เนื้อหาคอมเมนต์ + จุดไข่ปลา -->
+            <!-- เนื้อหาคอมเมนต์ + จุดไข่ปลา -->
             <div class="flex-grow-1 position-relative">
-                <!-- จุดไข่ปลา -->
-                <div class="dropdown position-absolute top-0 end-0">
-                    <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                      <i class="bi bi-three-dots-vertical"></i> <!-- ถ้าใช้ Tabler: ti-dots-vertical -->
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                      <li><a class="dropdown-item" href="#">แก้ไข</a></li>
-                      <li><a class="dropdown-item" href="#">ลบ</a></li>
+            <!-- จุดไข่ปลา -->
+                 <div class="dropdown position-absolute top-0 end-0">';
+  if ($userID ==  $comment['fd_user_id']) { //|| $userID == $post['fd_post_user_create']
+    echo '            <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                              <i class="bi bi-three-dots-vertical"></i> <!-- ถ้าใช้ Tabler: ti-dots-vertical -->
+                      </button>
+                      <ul class="dropdown-menu dropdown-menu-end">
+                          <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#edit-comment-modal" onclick="EditComment(\'' . $Encrypt->EnCrypt_pass($comment['fd_comment_id']) . '\')">แก้ไข</a></li>
+                          <li><a class="dropdown-item" href="#">ลบ</a></li>
                       <!-- <li><a class="dropdown-item" href="#">รายงาน</a></li> -->
-                    </ul>
-                </div>
-
-                <!-- เนื้อคอมเมนต์ -->
-                <div class="bg-light rounded px-3 py-2" >
+                      </ul>';
+  } else if ($userStatus == 'executive') {
+    echo '            <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                              <i class="bi bi-three-dots-vertical"></i> <!-- ถ้าใช้ Tabler: ti-dots-vertical -->
+                      </button>
+                      <ul class="dropdown-menu dropdown-menu-end">
+                          <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#edit-comment-modal" onclick="EditComment(\'' . $Encrypt->EnCrypt_pass($comment['fd_comment_id']) . '\')">แก้ไข(สิทธ์ผู้บริหาร)</a></li>
+                          <li><a class="dropdown-item" href="#">ลบ(สิทธ์ผู้บริหาร)</a></li>
+                      <!-- <li><a class="dropdown-item" href="#">รายงาน</a></li> -->
+                      </ul>';
+  }
+  echo '          </div> <!-- เนื้อคอมเมนต์ -->
+                  <div class="bg-light rounded px-3 py-2" >
                     <strong>' . $comment['fd_user_fullname'] . '</strong>
                     <div id="comment_' . $Encrypt->EnCrypt_pass($comment['fd_comment_id']) . '"> 
                     <div>' . $comment['fd_comment_mesage'] . '</div>';

@@ -104,11 +104,13 @@ foreach ($posts as $post) {
                   <a class="dropdown-item" href="detail_post.php?post=' . $Encrypt->EnCrypt_pass($post['fd_post_id']) . '" target="_blank">แสดรายละเอียด</a>
                   <!-- <a class="dropdown-item" href="#">Share</a> -->';
   if ($userID == $post['fd_post_user_create']) {
-    echo '<a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#edit-post-modal" onclick="EditPost(\'' . $Encrypt->EnCrypt_pass($post['fd_post_id']) . '\')">แก้ไข</a>';
+    echo '<a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#edit-post-modal" onclick="EditPost(\'' . $Encrypt->EnCrypt_pass($post['fd_post_id']) . '\')">แก้ไข</a>
+          <a class="dropdown-item" onclick="removeCardWithEffect(\'post_id_' . $Encrypt->EnCrypt_pass($post['fd_post_id']) . '\')" style="cursor: pointer;">ส่งโพสต์ไปถังขยะ</a>';
   } else if ($userStatus == "executive") {
-    echo '<a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#edit-post-modal" onclick="EditPost(\'' . $Encrypt->EnCrypt_pass($post['fd_post_id']) . '\')">แก้ไข(สิทธ์ผู้บริหาร)</a>';
+    echo '<a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#edit-post-modal" onclick="EditPost(\'' . $Encrypt->EnCrypt_pass($post['fd_post_id']) . '\')">แก้ไข(สิทธ์ผู้บริหาร)</a>
+          <a class="dropdown-item" onclick="removeCardWithEffect(\'post_id_' . $Encrypt->EnCrypt_pass($post['fd_post_id']) . '\')" style="cursor: pointer;">ส่งโพสต์ไปถังขยะ(สิทธ์ผู้บริหาร)</a>';
   }
-  echo '<a class="dropdown-item" onclick="removeCardWithEffect(\'post_id_' . $Encrypt->EnCrypt_pass($post['fd_post_id']) . '\')" style="cursor: pointer;">ส่งโพสต์ไปถังขยะ</a>
+  echo '
                 </div>
               </div>
             </div>
@@ -135,7 +137,7 @@ foreach ($posts as $post) {
     echo '<div class="mt-3"><span class="">ผู้ที่ได้รับการแท็ก : </span>';
     foreach ($post_tag as $tag) {
       if (trim($tag['fd_user_fullname']) !== '') {
-        echo '<a href="farmer.php?id=' . $tag['fd_user_id'] . '" target="_blank"><span class="badge bg-light-secondary border border-secondary bg-transparent f-14 me-1 mt-1">' . htmlspecialchars($tag['fd_user_fullname']) . '</span> </a>';
+        echo '<a href="farmer.php?id=' .  $Encrypt->EnCrypt_pass($tag['fd_user_id']) . '" target="_blank"><span class="badge bg-light-secondary border border-secondary bg-transparent f-14 me-1 mt-1">' . htmlspecialchars($tag['fd_user_fullname']) . '</span> </a>';
       }
     }
   } else {
