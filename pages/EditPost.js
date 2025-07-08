@@ -386,7 +386,7 @@ async function EditPost(Encrypt_post_id) {
   formData.append("post_id", Encrypt_post_id);
 
   try {
-    const response = await fetch("load_post_edit.php", {
+    const response = await fetch("api_Load_post_edit.php", {
       method: "POST",
       body: formData,
     });
@@ -513,7 +513,7 @@ document
   });
 async function Load_newupdate_post(post_id, retryCount = 1) {
   const maxRetries = 3;
-  const url = "load_post_newupdate.php";
+  const url = "api_Load_post_newupdate.php";
 
   // สร้างข้อมูล POST
   const formData = new FormData();
