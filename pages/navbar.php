@@ -1,4 +1,4 @@
-<?php if (!$_SESSION['TopicUserId']) {
+<?php if (empty($_SESSION['TopicUserId'])) {
   echo "<script>
     alert('เซสชั่นหมดอายุ');
     window.location.href = '../login.php'; // เปลี่ยนเป็นหน้าที่คุณต้องการส่งไป
