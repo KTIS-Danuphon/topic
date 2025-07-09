@@ -88,8 +88,8 @@ foreach ($comments as $comment) {
   if (preg_match('/\.(jpg|jpeg|png)$/i', $comment['fd_comment_file'])) {
     echo ' <!-- รูปที่แนบมา -->
                     <div class="mt-2">
-                        <a href="img/post/2025-06-24/File_1750748863.png" target="_blank">
-                        <img src="file_upload/' . $comment['fd_comment_file'] . '" alt="แนบมา" class="img-thumbnail"
+                        <a href="OpenFile_link.php?key=' . $Encrypt->EnCrypt_pass($comment['fd_comment_file']) . '" target="_blank">
+                        <img src="OpenFile_show.php?key=' . $Encrypt->EnCrypt_pass($comment['fd_comment_file']) . '" alt="แนบมา" class="img-thumbnail"
                           style="max-width: 200px; transition: 0.3s; cursor: zoom-in;">
                         </a>
                     </div>';
@@ -97,7 +97,7 @@ foreach ($comments as $comment) {
     echo ' <!-- ไฟล์ PDF แนบ -->
                     <div class="mt-2 d-flex align-items-center bg-white border rounded p-2" style="max-width: 300px;">
                       <i class="ti ti-file-text text-danger me-2" style="font-size: 20px;"></i>
-                      <a href="file_upload/' . $comment['fd_comment_file'] . '" target="_blank" class="text-decoration-none">
+                      <a href="OpenFile_link.php?key=' . $Encrypt->EnCrypt_pass($comment['fd_comment_file']) . '" target="_blank" class="text-decoration-none">
                         ไฟล์แนบ.pdf
                       </a>
                     </div>';
