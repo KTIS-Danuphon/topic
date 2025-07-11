@@ -441,7 +441,7 @@ $Encrypt = new Encrypt_data();
                         display: none;
                       }
 
-                      #file_name_container {
+                      .file_name_container {
                         display: inline-flex;
                         align-items: center;
                         gap: 4px;
@@ -470,7 +470,7 @@ $Encrypt = new Encrypt_data();
                           <input type="file" name="comment_file" id="comment_file" class="custom-file-input" accept=".jpg,.jpeg,.png,.pdf">
                         </label>
 
-                        <span id="file_name_container" style="display:none;">
+                        <span id="file_name_container" class="file_name_container" style="display:none;">
                           <span id="file_name_display"></span>
                           <span class="remove-file" id="remove_file_btn">&times;</span>
                         </span>
@@ -570,10 +570,25 @@ $Encrypt = new Encrypt_data();
                 <div id="suggestions_edit" class="suggestions"></div>
               </div>
 
-              <div class="col-md-12">
+              <!-- <div class="col-md-12">
                 <label for="post_add_file_edit">แนบไฟล์</label>
                 <input type="file" name="post_add_file_edit" id="post_add_file_edit" class="form-control" accept=".pdf,.png,.jpg,.jpe,.jpeg">
                 <div class="invalid-feedback">แนบไฟล์</div>
+              </div> -->
+
+              <div class="comment-actions">
+                <div class="col-md-12">
+                  <label class="custom-file-label">
+                    <i class="ti ti-paperclip"></i> แนบไฟล์
+                    <input type="file" name="post_file_edit" id="post_file_edit" class="custom-file-input" accept=".jpg,.jpeg,.png,.pdf">
+                  </label>
+
+                  <span id="post_file_name_container" class="file_name_container" style="display:none;">
+                    <span id="post_file_name_display"></span>
+                    <span class="remove-file" id="post_remove_file_btn">&times; ◀️คลิกเพื่อลบไฟล์แนบ</span>
+                  </span>
+                </div>
+                <input type="hidden" id="post_has_old_file" name="has_old_file">
               </div>
               <p></p>
 
@@ -623,20 +638,20 @@ $Encrypt = new Encrypt_data();
     </div>
   </div>
 
-    <div class="modal fade" id="edit-post-modal" data-bs-keyboard="false" tabindex="-1"
+  <div class="modal fade" id="edit-comment-modal" data-bs-keyboard="false" tabindex="-1"
     aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
       <div class="modal-content">
         <div class="modal-header">
           <div class="d-flex w-100 align-items-center">
             <div class="flex-grow-1 mx-3">
-              <h4 class="mb-1">แก้ไขโพสต์</h4>
+              <h4 class="mb-1">แก้ไขความคิดเห็น</h4>
             </div>
           </div>
 
         </div>
         <div class="modal-body">
-          <form id="mentionForm_edit" method="post" enctype="multipart/form-data">
+          <form id="mentionForm_comment_edit" method="post" enctype="multipart/form-data">
             <div class="form-group row" style="padding: 0px 5%">
               <input type="hidden" id="comment_id_edit" name="comment_id_edit" value="">
 
@@ -646,54 +661,30 @@ $Encrypt = new Encrypt_data();
                   <div id="editor-wrapper" class="editor-wrapper">
                     <div id="editor_comment_edit" name="editor_comment_edit" class="editor" contenteditable="true" data-placeholder="กรอก เนื้อโพสต์"></div>
                   </div>
-                  <div id="editor-error_edit" class="text-danger" style="display: none;">กรุณากรอกเนื้อหาโพสต์</div>
+                  <div id="editor-error_comment_edit" class="text-danger" style="display: none;">กรุณากรอกเนื้อหาโพสต์</div>
                   <input type="hidden" name="comment_content_edit" id="comment_content_edit" required>
                   <input type="hidden" name="comment_tag_inpost_edit" id="comment_tag_inpost_edit">
                 </div>
-                <div id="suggestions_edit" class="suggestions"></div>
+                <div id="suggestions_comment_edit" class="suggestions"></div>
               </div>
 
-              <div class="col-md-12">
-                <label for="post_add_file_edit">แนบไฟล์</label>
-                <input type="file" name="post_add_file_edit" id="post_add_file_edit" class="form-control" accept=".pdf,.png,.jpg,.jpe,.jpeg">
-                <div class="invalid-feedback">แนบไฟล์</div>
-              </div>
-              <p></p>
+              <div class="comment-actions">
+                <div class="col-md-12">
+                  <label class="custom-file-label">
+                    <i class="ti ti-paperclip"></i> แนบไฟล์
+                    <input type="file" name="comment_file_edit" id="comment_file_edit" class="custom-file-input" accept=".jpg,.jpeg,.png,.pdf">
+                  </label>
 
-              <div class="col-md-4">
-                <label for="tag">แท็กตั้งต้น : </label> <span class="badge bg-light-primary border border-primary bg-transparent f-14 me-1 mt-1">ผู้บริหาร</span>
+                  <span id="comment_file_name_container" class="file_name_container" style="display:none;">
+                    <span id="comment_file_name_display"></span>
+                    <span class="remove-file" id="comment_remove_file_btn">&times; ◀️คลิกเพื่อลบไฟล์แนบ</span>
+                  </span>
+                </div>
+                <input type="hidden" id="has_old_file" name="has_old_file">
               </div>
-              <div class="col-md-8">
-                <label for="">สถานะของโพสต์ : </label><span> </span>
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="radio" name="post_status_edit" id="post_status_edit1" value="todo" required>
-                  <label class="form-check-label badge bg-light-danger rounded-pill f-12" for="post_status_edit1"> ต้องทำ </label>
-                </div>
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="radio" name="post_status_edit" id="post_status_edit2" value="doing">
-                  <label class="form-check-label badge bg-light-primary rounded-pill f-12" for="post_status_edit2">ดำเนินการ</label>
-                </div>
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="radio" name="post_status_edit" id="post_status_edit3" value="success">
-                  <label class="form-check-label badge bg-light-success rounded-pill f-12" for="post_status_edit3">เสร็จ</label>
-                </div>
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="radio" name="post_status_edit" id="post_status_edit4" value="">
-                  <label class="form-check-label" for="post_status_edit4">ไม่มีสถานะ</label>
-                </div>
-              </div>
-              <p></p>
-              <div class="col-md-12">
-                <label for="tag-users_edit" class="tag-label">👥 แท็กผู้ใช้:</label>
-                <div id="div-tag-users_edit">
-                  <select id="tag-users_edit" name="tag_users_edit[]" onchange="updateHiddenInput_edit()" multiple></select>
-                </div>
-                <input type="hidden" name="post_tag_other_edit" id="post_tag_other_edit">
-              </div>
-              </select>
-
-
             </div>
+            <p></p>
+
             <!-- <button type="submit">ส่งข้อมูล</button> -->
             <div class="modal-footer">
               <button class="btn btn-link-success" type="submit">บันทึก</button>
@@ -934,6 +925,8 @@ $Encrypt = new Encrypt_data();
                   top: 0,
                   behavior: 'smooth'
                 });
+                document.getElementById('comment_file').value = '';
+                document.getElementById('file_name_container').style.display = 'none';
                 loadNewComments(formData.get("post_id"));
                 updateCountComment();
 
@@ -954,12 +947,80 @@ $Encrypt = new Encrypt_data();
         }
       }
     });
+    document.getElementById('mentionForm_comment_edit').addEventListener('submit', async function(e) {
+      e.preventDefault(); // ❌ ป้องกัน reload หน้า
+      const editor = document.getElementById('editor_comment_edit');
+      const error = document.getElementById('editor-error_comment_edit');
+      console.log("submit");
+      // trim เพื่อตัดช่องว่างที่ไม่มีความหมาย
+      const text = editor.innerText.trim();
+
+      if (text === '') {
+        e.preventDefault(); // ป้องกันการส่งฟอร์ม
+        error.style.display = 'block';
+        editor.classList.add('border-danger');
+        editor.focus();
+        setTimeout(() => {
+          error.style.display = 'none';
+          editor.classList.remove('border-danger');
+        }, 5000); // 5000 มิลลิวินาที = 5 วินาที
+      } else {
+        error.style.display = 'none';
+        editor.classList.remove('border-danger');
+
+        const form = document.getElementById("mentionForm_comment_edit");
+        const hiddenInput = document.getElementById("comment_content_edit");
+        const content = editor.innerHTML;
+
+        hiddenInput.value = content;
+        const formData = new FormData(form); // ✅ รวมข้อมูลทั้งหมดรวมไฟล์แนบ
+        console.log(formData);
+
+        try {
+          const response = await fetch('action_edit_comment.php', {
+              method: 'POST',
+              body: formData
+            }).then(response => response.json()) // ❗ ถ้า response ไม่ใช่ JSON → Error ทันที
+            .then(data => {
+              console.log(data);
+              if (data.success) {
+                // แล้วเลื่อนไปบนสุด
+
+                console.log(data.newcontent);
+                $('#edit-comment-modal').modal('hide');
+                updateComment(data.comment_id, data.newcontent);
+                // document.getElementById('comment_file').value = '';
+                // document.getElementById('file_name_container').style.display = 'none';
+
+                // loadNewComments(formData.get("post_id"));
+                // updateCountComment();
+
+
+                // ถ้ามีฟังก์ชันอัปเดตอื่น
+                // if (cancelmodal_post("1")) { //สั่งปิด modal post ต้องreturn true
+                //   loadNewPosts(); //โหลดโพสต์ใหม่
+                // }
+
+              }
+            })
+            .catch(error => {
+              $('#edit-comment-modal').modal('hide');
+
+              console.error('เกิดข้อผิดพลาด:', error);
+            });
+
+        } catch (error) {
+          console.error('เกิดข้อผิดพลาด2:', error);
+        }
+      }
+    });
   </script>
 
   <script src="Editor_input.js">
 
   </script>
   <script src="EditPost.js"></script>
+  <script src="EditComment.js"></script>
   <script>
     function updateCountComment() {
       const countElement = document.getElementById('count_comment');
@@ -992,6 +1053,125 @@ $Encrypt = new Encrypt_data();
         top: document.body.scrollHeight,
         behavior: 'smooth'
       });
+    }
+
+    async function EditComment(Encrypt_comment_id) { //เรียกใช้ตอน กดปุ่มแก้ไข ความคิดเห้น
+      const formData = new FormData();
+      formData.append("comment_id", Encrypt_comment_id);
+
+      try {
+        const response = await fetch("api_Load_comment_edit.php", {
+          method: "POST",
+          body: formData,
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          data1 = data.data; // ✅ ดึงเฉพาะข้อมูลโพสต์
+
+          let content = data1.fd_comment_mesage;
+          // สร้าง DOM จาก content เดิม
+          let div = document.createElement("div");
+          div.innerHTML = content;
+          // แปลง DOM กลับเป็น HTML string
+          data1.fd_comment_mesage = div.innerHTML;
+
+          document.getElementById("comment_id_edit").value = data1.fd_comment_id;
+          document.getElementById("editor_comment_edit").innerHTML = data1.fd_comment_mesage;
+          document.getElementById("comment_content_edit").value =
+            data1.fd_comment_mesage;
+          const fileInput = document.getElementById('comment_file_edit');
+          const fileNameDisplay = document.getElementById('comment_file_name_display');
+          const fileNameContainer = document.getElementById('comment_file_name_container');
+          const removeFileBtn = document.getElementById('comment_remove_file_btn');
+          const hasOldFile = document.getElementById('has_old_file');
+
+          fileInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+              fileNameDisplay.textContent = file.name;
+              fileNameContainer.style.display = 'inline-flex';
+              hasOldFile.value = 1; //ตั้งเป็น 1 เมื่อมีไฟล์
+            } else {
+              fileNameDisplay.textContent = '';
+              fileNameContainer.style.display = 'none';
+            }
+          });
+
+          removeFileBtn.addEventListener('click', function() {
+            // Reset input
+            fileInput.value = '';
+            fileNameDisplay.textContent = '';
+            fileNameContainer.style.display = 'none';
+            hasOldFile.value = 0;
+          });
+          if (data1.fd_comment_file != '') {
+            fileInput.value = '';
+            fileNameDisplay.textContent = 'มีไฟล์แนบเดิม';
+            fileNameContainer.style.display = 'inline-block';
+            fileInput.style.display = 'none';
+            hasOldFile.value = 1; //ตั้งเป็น 1 เมื่อมีไฟล์เดิม
+          } else {
+            fileNameDisplay.textContent = '';
+            fileNameContainer.style.display = 'none';
+            fileInput.value = '';
+            hasOldFile.value = 0;
+          }
+          document.getElementById("comment_tag_inpost_edit").value =
+            data1.fd_comment_tag; //เก็บ IDผู้ใช้ แท็กในความคิดเห้น
+
+        } else {
+          console.warn("ไม่พบโพสต์:", data.message);
+        }
+      } catch (error) {
+        console.error("เกิดข้อผิดพลาด:", error);
+      }
+    }
+
+    function updateComment(comment_id, newContent) {
+      const commentContainer = document.getElementById("comment_" + comment_id);
+      // const statusContainer = document.getElementById("post_status_" + post_id);
+
+      // เพิ่ม effect 'กำลังแก้ไข'
+      commentContainer.classList.add("editing-effect");
+      // statusContainer.classList.add("editing-effect");
+
+      setTimeout(() => {
+        // เริ่ม fade-out content
+        commentContainer.classList.add("fade-out-old");
+        // statusContainer.classList.add("fade-out-old");
+
+        commentContainer.addEventListener(
+          "animationend",
+          () => {
+            // แทนเนื้อหาใหม่
+            commentContainer.innerHTML = newContent;
+
+            // เปลี่ยนสถานะพร้อมกัน
+            // if (statusContainer) {
+            //   statusContainer.innerHTML = newStatus;
+            //   statusContainer.classList.remove("fade-out-old", "editing-effect");
+            // }
+
+            // ล้างคลาสเก่า
+            commentContainer.classList.remove("fade-out-old", "editing-effect");
+
+            // fade-in ข้อมูลใหม่
+            commentContainer.classList.add("fade-in-new");
+            commentContainer.addEventListener(
+              "animationend",
+              () => {
+                commentContainer.classList.remove("fade-in-new");
+              }, {
+                once: true,
+              }
+            );
+          }, {
+            once: true,
+          }
+        );
+      }, 300); // รอสั้นๆ เพื่อให้เห็น effect "กำลังแก้"
     }
   </script>
 </body>

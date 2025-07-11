@@ -203,6 +203,55 @@ if (!isset($_SESSION["TopicUserId"])) {
       }
     }
   </style>
+  <style>
+    /* CSS แนบไฟล์ */
+    .comment-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 0.75rem;
+      border-top: 1px solid #e0e0e0;
+      padding-top: 0.5rem;
+    }
+
+    .custom-file-label {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      font-size: 14px;
+      color: #555;
+    }
+
+    .custom-file-label i {
+      margin-right: 5px;
+      color: #555;
+    }
+
+    .custom-file-input {
+      display: none;
+    }
+
+    .file_name_container {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      color: #888;
+      margin-left: 10px;
+    }
+
+    .remove-file {
+      cursor: pointer;
+      font-weight: bold;
+      color: #dc3545;
+    }
+
+    .btn-send {
+      padding: 4px 16px;
+      font-size: 14px;
+      border-radius: 20px;
+    }
+  </style>
 </head>
 <!-- [Head] end -->
 <!-- [Body] Start -->
@@ -427,6 +476,20 @@ if (!isset($_SESSION["TopicUserId"])) {
                 <input type="file" name="post_add_file" id="post_add_file" class="form-control" accept=".pdf,.png,.jpg,.jpe,.jpeg">
                 <div class="invalid-feedback">แนบไฟล์</div>
               </div>
+              <!-- <div class="comment-actions">
+                <div class="col-md-12">
+                  <label class="custom-file-label">
+                    <i class="ti ti-paperclip"></i> แนบไฟล์
+                    <input type="file" name="post_add_file" id="post_add_file" class="custom-file-input" accept=".jpg,.jpeg,.png,.pdf">
+                  </label>
+
+                  <span id="post_file_name_container" class="file_name_container" style="display:none;">
+                    <span id="post_file_name_display"></span>
+                    <span class="remove-file" id="post_remove_file_btn">&times; ◀️คลิกเพื่อลบไฟล์แนบ</span>
+                  </span>
+                </div>
+                <input type="hidden" id="post_has_old_file" name="has_old_file">
+              </div> -->
               <p></p>
 
               <div class="col-md-4">
@@ -550,10 +613,24 @@ if (!isset($_SESSION["TopicUserId"])) {
                 <div id="suggestions_edit" class="suggestions"></div>
               </div>
 
-              <div class="col-md-12">
+              <!-- <div class="col-md-12">
                 <label for="post_add_file_edit">แนบไฟล์</label>
                 <input type="file" name="post_add_file_edit" id="post_add_file_edit" class="form-control" accept=".pdf,.png,.jpg,.jpe,.jpeg">
                 <div class="invalid-feedback">แนบไฟล์</div>
+              </div> -->
+              <div class="comment-actions">
+                <div class="col-md-12">
+                  <label class="custom-file-label">
+                    <i class="ti ti-paperclip"></i> แนบไฟล์
+                    <input type="file" name="post_file_edit" id="post_add_file_edit" class="custom-file-input" accept=".jpg,.jpeg,.png,.pdf">
+                  </label>
+
+                  <span id="post_file_name_container_edit" class="file_name_container" style="display:none;">
+                    <span id="post_file_name_display_edit"></span>
+                    <span class="remove-file" id="post_remove_file_btn_edit">&times; ◀️คลิกเพื่อลบไฟล์แนบ</span>
+                  </span>
+                </div>
+                <input type="hidden" id="post_has_old_file_edit" name="has_old_file">
               </div>
               <p></p>
 
@@ -1654,6 +1731,48 @@ if (!isset($_SESSION["TopicUserId"])) {
               radio.checked = true;
             }
           });
+
+          const fileInput = document.getElementById('post_add_file_edit');
+          const fileNameDisplay = document.getElementById('post_file_name_display_edit');
+          const fileNameContainer = document.getElementById('post_file_name_container_edit');
+          const removeFileBtn = document.getElementById('post_remove_file_btn_edit');
+          const hasOldFile = document.getElementById('post_has_old_file_edit');
+
+          fileInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+              console.log(file);
+              console.log(file.name);
+              fileNameDisplay.textContent = file.name;
+              fileNameContainer.style.display = 'inline-flex';
+              console.log(fileNameContainer.style.display );
+
+              hasOldFile.value = 1; //ตั้งเป็น 1 เมื่อมีไฟล์
+            } else {
+              fileNameDisplay.textContent = '';
+              fileNameContainer.style.display = 'none';
+            }
+          });
+
+          removeFileBtn.addEventListener('click', function() {
+            // Reset input
+            fileInput.value = '';
+            fileNameDisplay.textContent = '';
+            fileNameContainer.style.display = 'none';
+            hasOldFile.value = 0;
+          });
+          if (data1.fd_post_file != '') {
+            fileInput.value = '';
+            fileNameDisplay.textContent = 'มีไฟล์แนบเดิม';
+            fileNameContainer.style.display = 'inline-block';
+            fileInput.style.display = 'none';
+            hasOldFile.value = 1; //ตั้งเป็น 1 เมื่อมีไฟล์เดิม
+          } else {
+            fileNameDisplay.textContent = '';
+            fileNameContainer.style.display = 'none';
+            fileInput.value = '';
+            hasOldFile.value = 0;
+          }
 
           //🏷️ แท็กผู้ที่มีสิทธิ์เห็นโพสต์ 🔻
           document.getElementById('post_tag_other_edit').value = data1.fd_post_tag;

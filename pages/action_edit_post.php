@@ -94,6 +94,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         );
 
+        $post_file = '';
+        if ($_FILES['post_file_edit']['name'] != "" && $_POST['has_old_file'] == 1) {
+            if ($_FILES['post_file_edit']['name'] != "" && $_FILES['post_file_edit']['error'] === UPLOAD_ERR_OK) {
+                //! อัปไฟล์   
+                $NameFolder = date("Y-m-d");
+                if (!file_exists("file_upload/" . $NameFolder)) { //เช็คโฟลเดอร์ img ว่าไม่มีโฟลเดอร์  $NameFolder ใช่ไหม //ถ้าโฟลเดอร์ที่จะอัปโหลด ไม่ได้อยู่ตำแหน่งเดียวกับไฟล์นี้ ให้ ../img
+                    mkdir("file_upload/" . $NameFolder, 0777, true); //ถ้าไม่มี ในโฟลเดอร์ img ให้สร้างโฟลเดอร์ใหม่ชื่อ $NameFolder
+                    // echo "create folder" . $NameFolder;
+                } else {
+                    // echo "folder" . $NameFolder . "/" . " id Exists";
+                }
+                $time_ = time();
+                $file_name = $_FILES['post_file_edit']['name'];
+                $file_tmp = $_FILES['post_file_edit']['tmp_name'];
+                $file_extension = pathinfo($_FILES['post_file_edit']['name'], PATHINFO_EXTENSION); // นามสกุลไฟล์ เท่านั้น (โดยไม่รวมจุด .)
+                $new_file_name = 'File_' .  $time_ . "." . $file_extension; //สร้างชื่อไฟล์ใหม่ 
+                move_uploaded_file($file_tmp, "file_upload/" . $NameFolder . "/" . $new_file_name); //อัพโหลดไฟล์ไว้ที่ โฟลเดอร์ file_upload/โฟลเดอร์ $NameFolder / ชื่อไฟล์ใหม่
+                $post_file  = $NameFolder . "/" . $new_file_name; //ที่อยู่ไฟล์ที่จะเก็บในฐานข้อมูล
+                $fields['fd_post_file'] = $post_file;
+            }
+        } else if ($_POST['has_old_file'] == 0) {
+            $fields['fd_post_file'] = '';
+        }
+
         $conditions = array(
             'fd_post_id' => $post_id,
         );
@@ -107,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $newstatus = '';
             $newContent = '';
             foreach ($data_post_newupdate as $post) {
-                 $content = $post['fd_post_content'];
+                $content = $post['fd_post_content'];
                 if (!empty($post['fd_post_tag'])) {
                     $post_tag = select_name_user($post['fd_post_tag'], $object);
                 } else {
@@ -128,16 +152,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $newContent = '<h5>' . htmlspecialchars($post['fd_post_title']) . '</h5>
 <p class="mb-4">' . htmlspecialchars_decode($content) . '</p>';
                 if (!empty($post['fd_post_file'])) {
-                    $newContent .= '<div class="row g-2">
-        <div class="col-sm-12">
-            <div class="d-inline-flex align-items-center justify-content-start w-100">
-                <i class="ti ti-file-symlink"></i>
-                <a href="' . $post['fd_post_file'] . '" class="link-primary text-truncate">
-                    <p class="mb-0 ms-2 text-truncate">' . $post['fd_post_file'] . '</p>
-                </a>
-            </div>
-        </div>
-    </div>';
+
+                    if (preg_match('/\.(jpg|jpeg|png)$/i', $post['fd_post_file'])) {
+                        $newContent .= ' <!-- รูปที่แนบมา -->
+                    <div class="mt-2 d-flex justify-content-center align-items-center">
+                        <a href="OpenFile_link.php?key=' . $Encrypt->EnCrypt_pass($post['fd_post_file']) . '" target="_blank">
+                        <img src="OpenFile_show.php?key=' . $Encrypt->EnCrypt_pass($post['fd_post_file']) . '" alt="แนบมา" class="img-thumbnail"
+                          style="max-width: 300px; transition: 0.3s; cursor: zoom-in;">
+                        </a>
+                    </div>';
+                    } else if (preg_match('/\.(pdf)$/i', $post['fd_post_file'])) {
+                        $newContent .= ' <!-- ไฟล์ PDF แนบ -->
+                    <div class="mt-2 d-flex align-items-center bg-white border rounded p-2" style="max-width: 300px;">
+                      <i class="ti ti-file-text text-danger me-2" style="font-size: 20px;"></i>
+                      <a href="OpenFile_link.php?key=' . $Encrypt->EnCrypt_pass($post['fd_post_file']) . '" target="_blank" class="text-decoration-none">
+                        ไฟล์แนบ.pdf
+                      </a>
+                    </div>';
+                    } else {
+                        $newContent .= '<div class="mt-2"></div>';
+                    }
                 }
 
                 if (!empty($post_tag)) {
