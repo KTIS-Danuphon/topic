@@ -227,13 +227,13 @@ editor.addEventListener("click", function (e) {
 
     const range = document.createRange();
 
-    if (before?.nodeType === Node.TEXT_NODE && before.textContent === " ") {
+    if (before?.nodeType === Node.TEXT_NODE && before.textContent === "") {
       range.setStartBefore(before);
     } else {
       range.setStartBefore(span);
     }
 
-    if (after?.nodeType === Node.TEXT_NODE && after.textContent === " ") {
+    if (after?.nodeType === Node.TEXT_NODE && after.textContent === "") {
       range.setEndAfter(after);
     } else {
       range.setEndAfter(span);

@@ -1,5 +1,3 @@
-
-
 //   <!-- //! --------------------------- ดึงข้อมูล ผู้ใช้ไปแสดงใน แท็ก Edit ⬇️--------------------------------------------->
 
 let users_edit = []; //array เก็บ id ชื่อ ที่จะแท็กในโพสต์
@@ -435,6 +433,47 @@ async function EditPost(Encrypt_post_id) {
         }
       });
 
+      const fileInput = document.getElementById("post_file_edit");
+      const fileNameDisplay = document.getElementById("post_file_name_display");
+      const fileNameContainer = document.getElementById(
+        "post_file_name_container"
+      );
+      const removeFileBtn = document.getElementById("post_remove_file_btn");
+      const hasOldFile = document.getElementById("post_has_old_file");
+
+      fileInput.addEventListener("change", function () {
+        const file = this.files[0];
+        if (file) {
+          fileNameDisplay.textContent = file.name;
+          fileNameContainer.style.display = "inline-flex";
+          hasOldFile.value = 1; //ตั้งเป็น 1 เมื่อมีไฟล์
+        } else {
+          fileNameDisplay.textContent = "";
+          fileNameContainer.style.display = "none";
+        }
+      });
+
+      removeFileBtn.addEventListener("click", function () {
+        // Reset input
+        fileInput.value = "";
+        fileNameDisplay.textContent = "";
+        fileNameContainer.style.display = "none";
+        hasOldFile.value = 0;
+      });
+      if (data1.fd_post_file != "") {
+        console.log('post file me');
+        fileInput.value = "";
+        fileNameDisplay.textContent = "มีไฟล์แนบเดิม";
+        fileNameContainer.style.display = "inline-block";
+        fileInput.style.display = "none";
+        hasOldFile.value = 1; //ตั้งเป็น 1 เมื่อมีไฟล์เดิม
+      } else {
+        fileNameDisplay.textContent = "";
+        fileNameContainer.style.display = "none";
+        fileInput.value = "";
+        hasOldFile.value = 0;
+      }
+
       //🏷️ แท็กผู้ที่มีสิทธิ์เห็นโพสต์ 🔻
       document.getElementById("post_tag_other_edit").value = data1.fd_post_tag;
       reloadTagUserSelect_edit(); //รีโหลด choices เลือกแท็ก
@@ -544,4 +583,3 @@ async function Load_newupdate_post(post_id, retryCount = 1) {
 }
 
 // ----------------------------------------------------------
-
