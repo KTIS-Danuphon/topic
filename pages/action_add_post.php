@@ -97,6 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'fd_post_in_tag' => $post_tag_inpost,
             'fd_post_file' => $namefile_address_upload,
             'fd_post_active' => "1",
+            'fd_post_time_create' => $date_time
         );
         // print_r($fields);
 
