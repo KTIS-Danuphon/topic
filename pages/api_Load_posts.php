@@ -119,18 +119,27 @@ foreach ($posts as $post) {
             <h5>' . $title . '</h5>
             <p class="mb-4">' . htmlspecialchars_decode($content) . '</p>';
 
-
   if (!empty($post['fd_post_file'])) {
-    echo '<div class="row g-2">
-                <div class="col-sm-12">
-                    <div class="d-inline-flex align-items-center justify-content-start w-100">
-                        <i class="ti ti-file-symlink"></i>
-                        <a href="' . $post['fd_post_file'] . '" class="link-primary text-truncate">
-                            <p class="mb-0 ms-2 text-truncate">' . $post['fd_post_file'] . '</p>
+
+    if (preg_match('/\.(jpg|jpeg|png)$/i', $post['fd_post_file'])) {
+      echo ' <!-- รูปที่แนบมา -->
+                    <div class="mt-2 d-flex justify-content-center align-items-center">
+                        <a href="OpenFile_link.php?key=' . $Encrypt->EnCrypt_pass($post['fd_post_file']) . '" target="_blank">
+                        <img src="OpenFile_show.php?key=' . $Encrypt->EnCrypt_pass($post['fd_post_file']) . '" alt="แนบมา" class="img-thumbnail"
+                          style="max-width: 300px; transition: 0.3s; cursor: zoom-in;">
                         </a>
-                    </div>
-                </div>
-            </div>';
+                    </div>';
+    } else if (preg_match('/\.(pdf)$/i', $post['fd_post_file'])) {
+      echo ' <!-- ไฟล์ PDF แนบ -->
+                    <div class="mt-2 d-flex align-items-center bg-white border rounded p-2" style="max-width: 300px;">
+                      <i class="ti ti-file-text text-danger me-2" style="font-size: 20px;"></i>
+                      <a href="OpenFile_link.php?key=' . $Encrypt->EnCrypt_pass($post['fd_post_file']) . '" target="_blank" class="text-decoration-none">
+                        ไฟล์แนบ.pdf
+                      </a>
+                    </div>';
+    } else {
+      echo '<div class="mt-2"></div>';
+    }
   }
 
   if (!empty($post_tag)) {
