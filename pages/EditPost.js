@@ -199,13 +199,13 @@ function insertMention_edit(user) {
 
   // mention span
   const mentionSpan = document.createElement("span");
-  mentionSpan.textContent = "@" + user.inpost_user_name;
+  mentionSpan.textContent = "" + user.inpost_user_name; //ใส่ @ ที่ช่องว่างก็จะได้ @ชื่อ
   mentionSpan.className = "mention";
   mentionSpan.setAttribute("data-mention", user.inpost_user_name);
   mentionSpan.setAttribute("data-id", user.inpost_user_id);
   mentionSpan.contentEditable = "false";
 
-  const spaceNode = document.createTextNode(" ");
+  const spaceNode = document.createTextNode("");
 
   // ลบ node เดิม
   const parent = node.parentNode;
@@ -300,13 +300,13 @@ editor_edit.addEventListener("click", function (e) {
 
     const range = document.createRange();
 
-    if (before?.nodeType === Node.TEXT_NODE && before.textContent === " ") {
+    if (before?.nodeType === Node.TEXT_NODE && before.textContent === "") {
       range.setStartBefore(before);
     } else {
       range.setStartBefore(span);
     }
 
-    if (after?.nodeType === Node.TEXT_NODE && after.textContent === " ") {
+    if (after?.nodeType === Node.TEXT_NODE && after.textContent === "") {
       range.setEndAfter(after);
     } else {
       range.setEndAfter(span);
@@ -406,7 +406,8 @@ async function EditPost(Encrypt_post_id) {
         const span = a.querySelector("span.mention");
         if (span) {
           const newSpan = span.cloneNode(true); // คัดลอก <span>
-          const space = document.createTextNode("\u00A0"); // ช่องว่างแบบไม่ตัดบรรทัด (&nbsp;)
+          //const space = document.createTextNode('\u00A0'); // ช่องว่างแบบไม่ตัดบรรทัด (&nbsp;)
+          const space = document.createTextNode("");
 
           // แทนที่ <a> ด้วย <span> ตามด้วยช่องว่าง
           a.replaceWith(newSpan, space);
@@ -461,7 +462,7 @@ async function EditPost(Encrypt_post_id) {
         hasOldFile.value = 0;
       });
       if (data1.fd_post_file != "") {
-        console.log('post file me');
+        console.log("post file me");
         fileInput.value = "";
         fileNameDisplay.textContent = "มีไฟล์แนบเดิม";
         fileNameContainer.style.display = "inline-block";

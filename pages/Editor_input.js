@@ -125,13 +125,13 @@ function insertMention(user) {
 
   // mention span
   const mentionSpan = document.createElement("span");
-  mentionSpan.textContent = "@" + user.inpost_user_name;
+  mentionSpan.textContent = "" + user.inpost_user_name; //ใส่ @ ที่ช่องว่างก็จะได้ @ชื่อ
   mentionSpan.className = "mention";
   mentionSpan.setAttribute("data-mention", user.inpost_user_name);
   mentionSpan.setAttribute("data-id", user.inpost_user_id);
   mentionSpan.contentEditable = "false";
 
-  const spaceNode = document.createTextNode(" ");
+  const spaceNode = document.createTextNode("");
 
   // ลบ node เดิม
   const parent = node.parentNode;
