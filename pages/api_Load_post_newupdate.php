@@ -60,7 +60,7 @@ foreach ($data_post_detail as $post) {
                     <img src="../assets/images/user/avatar-2.jpg" alt="user-image" class="wid-40 rounded-circle">
                   </div>
                   <div class="flex-grow-1 mx-3">
-                    <h6 class="mb-1">' . $post['fd_user_fullname'] . '</h6>
+                    <h6 class="mb-1 fs-6 text-muted">' . $post['fd_user_fullname'] . '</h6>
                     <p class="text-muted text-sm mb-0">Manager IT</p>
                   </div>';
   switch ($post['fd_post_status']) {
@@ -86,8 +86,8 @@ foreach ($data_post_detail as $post) {
                 </div>
               </div>
               <div class="card-body" id="post_content">
-                <h5>' . $post['fd_post_title'] . '</h5>
-                <p class="mb-4">' . $post['fd_post_content'] . '</p>';
+                <h5 class="fs-4 fw-bold text-dark">' . $post['fd_post_title'] . '</h5>
+                <label>' . $post['fd_post_content'] . '</label>';
   if ($post['fd_post_file']) {
     echo '<div class="row g-2">
                                   <div class="col-sm-12">

@@ -74,7 +74,7 @@ foreach ($posts as $post) {
                 <img src="../assets/images/user/avatar-2.jpg" alt="user-image" class="wid-40 rounded-circle">
               </div>
               <div class="flex-grow-1 mx-3">
-                <h6 class="mb-1">' . htmlspecialchars($post['fd_user_fullname']) . '</h6>
+                <h6 class="mb-1 fs-6 text-muted">' . htmlspecialchars($post['fd_user_fullname']) . '</h6>
                 <p class="text-muted text-sm mb-0">' . htmlspecialchars($post['fd_user_position']) . '</p>
               </div>
              
@@ -116,8 +116,8 @@ foreach ($posts as $post) {
             </div>
           </div>
           <div class="card-body" id="post_content_' . $post['fd_post_id'] . '">
-            <h5>' . $title . '</h5>
-            <p class="mb-4">' . htmlspecialchars_decode($content) . '</p>';
+            <h5 class="fs-4 fw-bold text-dark">' . $title . '</h5>
+            <label>' . htmlspecialchars_decode($content) . '</label>';
 
   if (!empty($post['fd_post_file'])) {
 

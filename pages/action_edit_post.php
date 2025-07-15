@@ -149,8 +149,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         break;
                 }
 
-                $newContent = '<h5>' . htmlspecialchars($post['fd_post_title']) . '</h5>
-<p class="mb-4">' . htmlspecialchars_decode($content) . '</p>';
+                $newContent = '<h5 class="fs-4 fw-bold text-dark">' . htmlspecialchars($post['fd_post_title']) . '</h5>
+                <label>' . htmlspecialchars_decode($content) . '</label>';
                 if (!empty($post['fd_post_file'])) {
 
                     if (preg_match('/\.(jpg|jpeg|png)$/i', $post['fd_post_file'])) {
