@@ -186,7 +186,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                     $newContent .= '</div>'; // ✅ ปิด div ตรงนี้
                 } else {
-                    $newContent .= '<div class="mt-3"></div>'; // ✅ ปิด div ถึงแม้ไม่มี tag
+                    $newContent .= '<div class="mt-3" style="margin-bottom:-25px"></div>'; // ✅ ปิด div ถึงแม้ไม่มี tag
                 }
 
 

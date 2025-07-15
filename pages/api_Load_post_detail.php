@@ -124,7 +124,7 @@ foreach ($data_post_detail as $post) {
       }
     }
   } else {
-    echo '<div class="mt-3">';
+    echo '<div class="mt-3" style="margin-bottom:-25px">';
   }
 
   // echo '<span class="badge bg-light-secondary border border-secondary bg-transparent f-14 me-1 mt-1">ผู้บริหาร</span>';
