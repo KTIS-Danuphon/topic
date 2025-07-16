@@ -20,7 +20,7 @@
                               <h6 class="mb-1"><?= $_SESSION["TopicFullname"] ?></h6>
                               <span><?= $_SESSION["TopicPosition"] ?></span>
                           </div>
-                          <a href="#!" class="pc-head-link bg-transparent"><i class="ti ti-power text-danger"></i></a>
+                          <a href="../auth/logout.php" class="pc-head-link bg-transparent"><i class="ti ti-power text-danger"></i></a>
                       </div>
                   </div>
                   <ul class="nav drp-tabs nav-fill nav-tabs" id="mydrpTab" role="tablist">
@@ -65,7 +65,7 @@
                               <i class="ti ti-wallet"></i>
                               <span>Billing</span>
                           </a>
-                          <a href="#!" class="dropdown-item">
+                          <a href="../auth/logout.php" class="dropdown-item">
                               <i class="ti ti-power"></i>
                               <span>Logout</span>
                           </a>
