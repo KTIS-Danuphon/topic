@@ -567,7 +567,7 @@ if (!isset($_SESSION["TopicUserId"])) {
             </div>
             <!-- <button type="submit">ส่งข้อมูล</button> -->
             <div class="modal-footer">
-              <button class="btn btn-link-success" type="submit">สร้างโพสต์</button>
+              <button class="btn btn-link-success" id="submit_createpost" type="submit">สร้างโพสต์</button>
               <button class="btn btn-link-danger" onclick="cancelmodal_post('0')" type="button">ยกเลิก</button>
 
             </div>
@@ -1491,6 +1491,11 @@ if (!isset($_SESSION["TopicUserId"])) {
   <!-- //! ---------------- modal post submit ⬇️ ----------------------------------------------------->
   <script>
     document.getElementById('mentionForm').addEventListener('submit', async function(e) {
+      const button = document.getElementById('submit_createpost');
+      button.disabled = true;
+      setTimeout(() => {
+        button.disabled = false;
+      }, 3000); // 3 วินาที
       e.preventDefault(); // ❌ ป้องกัน reload หน้า
       const editor = document.getElementById('editor');
       const error = document.getElementById('editor-error');
