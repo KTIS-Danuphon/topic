@@ -34,8 +34,11 @@ if ($fullPath && strpos($fullPath, $baseDir) === 0 && file_exists($fullPath)) {
         'jpg' => 'image/jpeg',
         'jpeg' => 'image/jpeg',
         'png' => 'image/png',
-        // 'doc' => 'application/msword',
-        // 'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'doc' => 'application/msword',
+        'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        // Excel
+        'xls'  => 'application/vnd.ms-excel',
+        'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         // เพิ่มตามต้องการ
     ];
 
