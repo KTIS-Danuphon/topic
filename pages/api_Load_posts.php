@@ -117,29 +117,131 @@ foreach ($posts as $post) {
           </div>
           <div class="card-body" id="post_content_' . $post['fd_post_id'] . '">
             <h5 class="fs-4 fw-bold text-dark">' . $title . '</h5>
-            <label>' . htmlspecialchars_decode($content) . '</label>';
+            <label>' . htmlspecialchars_decode($content) . '&nbsp;</label>';
 
   if (!empty($post['fd_post_file'])) {
+    $files = explode(",", $post['fd_post_file']); // แยกไฟล์ออกมาเป็น array
 
-    if (preg_match('/\.(jpg|jpeg|png)$/i', $post['fd_post_file'])) {
-      echo ' <!-- รูปที่แนบมา -->
-                    <div class="mt-2 d-flex justify-content-center align-items-center">
-                        <a href="OpenFile_link.php?key=' . $Encrypt->EnCrypt_pass($post['fd_post_file']) . '" target="_blank">
-                        <img src="OpenFile_show.php?key=' . $Encrypt->EnCrypt_pass($post['fd_post_file']) . '" alt="แนบมา" class="img-thumbnail"
-                          style="max-width: 300px; transition: 0.3s; cursor: zoom-in;">
-                        </a>
-                    </div>';
-    } else if (preg_match('/\.(pdf)$/i', $post['fd_post_file'])) {
-      echo ' <!-- ไฟล์ PDF แนบ -->
-                    <div class="mt-2 d-flex align-items-center bg-white border rounded p-2" style="max-width: 300px;">
-                      <i class="ti ti-file-text text-danger me-2" style="font-size: 20px;"></i>
-                      <a href="OpenFile_link.php?key=' . $Encrypt->EnCrypt_pass($post['fd_post_file']) . '" target="_blank" class="text-decoration-none">
-                        ไฟล์แนบ.pdf
-                      </a>
-                    </div>';
-    } else {
-      echo '<div class="mt-2"></div>';
+    // !ทดสอบแสดงรูป
+    $total = count($files); //ไฟล์ทั้งหมด
+    $index = 0;
+    $total_img = 0;
+    foreach ($files as $file) {
+      $file = trim($file);
+      if (!preg_match('/\.(jpg|jpeg|png)$/i', $file)) {
+        $total_img++;
+      }
     }
+    echo '<div class="row mt-2 justify-content-center">';
+
+    foreach ($files as $file) {
+      $file = trim($file);
+      if (!preg_match('/\.(jpg|jpeg|png)$/i', $file)) {
+        continue;
+      }
+      $index++;
+      $enc = $Encrypt->EnCrypt_pass($file);
+
+      // เคส 1 รูป
+      if ($total == 1) {
+        echo '
+        <div class="col-auto">
+            <a href="OpenFile_link.php?key=' . $enc . '" target="_blank">
+                <img src="OpenFile_show.php?key=' . $enc . '" 
+                     class="img-thumbnail" 
+                     style="max-width:300px; transition:0.3s; cursor:zoom-in;">
+            </a>
+        </div>';
+      }
+
+      // เคส 2 รูป → ซ้าย + ขวา
+      elseif ($total == 2) {
+        echo '
+        <div class="col-6 text-center">
+            <a href="OpenFile_link.php?key=' . $enc . '" target="_blank">
+                <img src="OpenFile_show.php?key=' . $enc . '" 
+                     class="img-thumbnail w-100" 
+                     style="max-height:300px; object-fit:cover; transition:0.3s; cursor:zoom-in;">
+            </a>
+        </div>';
+      }
+
+      // เคส 3 รูปขึ้นไป
+      else {
+        // แสดงแค่ 2 รูปแรก
+        if ($index <= 1) {
+          echo '
+            <div class="col-6 text-center">
+                <a href="OpenFile_link.php?key=' . $enc . '" target="_blank">
+                    <img src="OpenFile_show.php?key=' . $enc . '" 
+                         class="img-thumbnail w-100" 
+                         style="max-height:300px; object-fit:cover; transition:0.3s; cursor:zoom-in;">
+                </a>
+            </div>';
+        }
+        // ที่รูปที่ 3 → overlay +X
+        else if ($index == 3) {
+          $remain = $total_img - 1;
+          echo '
+            <div class="col-6 position-relative text-center">
+                <a  href="detail_post.php?post=' . $Encrypt->EnCrypt_pass($post['fd_post_id']) . '" target="_blank">
+                    <img src="OpenFile_show.php?key=' . $enc . '" 
+                         class="img-thumbnail w-100" 
+                         style="max-height:300px; object-fit:cover;">
+                    <div class="position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"
+                         style="background:rgba(0,0,0,0.5); color:white; font-size:2rem; font-weight:bold; border-radius:.375rem;">
+                         +' . $remain . '
+                    </div>
+                </a>
+            </div>';
+          break; // ไม่ต้องวน loop ต่อ
+        }
+      }
+    }
+    echo '</div>';
+    // !ทดสอบแสดงรูป
+
+    // foreach ($files as $file) {
+    //   $file = trim($file); // กันช่องว่างเกินมา
+
+    //   if (preg_match('/\.(jpg|jpeg|png)$/i', $file)) {
+    //     echo ' <!-- รูปที่แนบมา -->
+    //             <div class="row mt-2 justify-content-center">
+    //             <div class="col-auto">
+    //                 <a href="OpenFile_link.php?key=' . $Encrypt->EnCrypt_pass($file) . '" target="_blank">
+    //                     <img src="OpenFile_show.php?key=' . $Encrypt->EnCrypt_pass($file) . '" alt="แนบมา" class="img-thumbnail"
+    //                         style="max-width: 300px; transition: 0.3s; cursor: zoom-in;">
+    //                 </a>
+    //             </div>
+    //             </div>';
+    //   } else if (preg_match('/\.(pdf)$/i', $file)) {
+    //     echo ' <!-- ไฟล์ PDF แนบ -->
+    //             <div class="mt-2 d-flex align-items-center bg-white border rounded p-2" style="max-width: 300px;">
+    //                 <i class="bi bi-file-earmark-pdf text-danger me-2" style="font-size: 20px;"></i>
+    //                 <a href="OpenFile_link.php?key=' . $Encrypt->EnCrypt_pass($file) . '" target="_blank" class="text-decoration-none">
+    //                     ไฟล์แนบ.pdf
+    //                 </a>
+    //             </div>';
+    //   } else if (preg_match('/\.(doc|docx)$/i', $file)) {
+    //     echo ' <!-- ไฟล์ WORD แนบ -->
+    //             <div class="mt-2 d-flex align-items-center bg-white border rounded p-2" style="max-width: 300px;">
+    //                 <i class="bi bi-file-earmark-word text-danger me-2" style="font-size: 20px;"></i>
+    //                 <a href="OpenFile_link.php?key=' . $Encrypt->EnCrypt_pass($file) . '" target="_blank" class="text-decoration-none">
+    //                     ไฟล์แนบ.doc
+    //                 </a>
+    //             </div>';
+    //   } else if (preg_match('/\.(xls|xlsx)$/i', $file)) {
+    //     echo ' <!-- ไฟล์ excel แนบ -->
+    //             <div class="mt-2 d-flex align-items-center bg-white border rounded p-2" style="max-width: 300px;">
+    //                 <i class="bi bi-file-earmark-excel text-danger me-2" style="font-size: 20px;"></i>
+    //                 <a href="OpenFile_link.php?key=' . $Encrypt->EnCrypt_pass($file) . '" target="_blank" class="text-decoration-none">
+    //                     ไฟล์แนบ.xls
+    //                 </a>
+    //             </div>';
+    //   } else {
+    //     echo '<div class="mt-2"></div>';
+    //   }
+    // }
   }
 
   if (!empty($post_tag)) {
