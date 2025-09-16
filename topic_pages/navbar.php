@@ -12,19 +12,19 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto ms-3">
                     <li class="nav-item">
-                        <a class="nav-link active" href="#">
+                        <a class="nav-link active" href="#" onclick="location.reload(); return false;">
                             <i class="bi bi-house-fill me-1"></i>หน้าหลัก
                         </a>
                     </li>
                     <li class="nav-item" data-bs-toggle="modal" data-bs-target="#task_newtopicModal">
-                        <a class="nav-link" href="#">
+                        <button class="nav-link" href="#">
                             <i class="bi bi-plus-circle-fill me-1"></i>สร้างงาน
-                        </a>
+                        </button>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <button class="nav-link" href="#">
                             <i class="bi bi-graph-up me-1"></i>รายงาน
-                        </a>
+                        </button>
                     </li>
                 </ul>
 
