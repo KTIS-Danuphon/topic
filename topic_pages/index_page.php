@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TaskManager Pro - ระบบจัดการงาน</title>
+    <title>Topic Tracking - ระบบติดตามงาน</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
@@ -2293,8 +2293,7 @@
                             <i class="bi bi-file-earmark${getFileIcon(file.type)}"></i>
                         </div>
                         <div class="file-details">
-                <input type="file" class="file-input-send" name="${input.id}" id="${input.id}" >
-
+                            <input type="file" class="file-input-send" name="${input.id}" id="${input.id}" hidden>
                             <div class="file-name" title="${file.name}">${truncateFileName(file.name, 30)}</div>
                             <div class="file-size">${formatFileSize(file.size)}</div>
                             <div class="file-type text-muted" style="font-size: 0.75rem;">${file.type || 'Unknown type'}</div>
@@ -2491,11 +2490,11 @@
             // Simulate API call
             setTimeout(() => {
                 // Reset button
-                saveBtn.innerHTML = originalHtml;
-                saveBtn.disabled = false;
+                // saveBtn.innerHTML = originalHtml;
+                // saveBtn.disabled = false;
 
                 // Show success message
-                showAlert('บันทึกงานสำเร็จ!', 'success');
+                // showAlert('บันทึกงานสำเร็จ!', 'success');
 
                 // Close modal
                 const modal = bootstrap.Modal.getInstance(document.getElementById('task_newtopicModal'));
@@ -2522,12 +2521,9 @@
             formData.files.forEach((fileData, index) => {
                 apiFormData.append(`files[${index}]`, fileData.file);
             });
-            fetch('api/save_task.php', {
+            fetch('../topic_api/save_task.php', {
                     method: 'POST',
-                    body: apiFormData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
+                    body: apiFormData
                 })
                 .then(response => {
                     if (!response.ok) {
@@ -2536,10 +2532,10 @@
                     return response.json();
                 })
                 .then(data => {
-                    if (data.success) {
+                    if (data.status === "success") {
                         showAlert('บันทึกงานสำเร็จ!', 'success');
-                        const modal = bootstrap.Modal.getInstance(document.getElementById('task_newtopicModal'));
-                        modal.hide();
+                        // const modal = bootstrap.Modal.getInstance(document.getElementById('task_newtopicModal'));
+                        // modal.hide();
                         // Optionally reload page or update UI
                     } else {
                         showAlert('เกิดข้อผิดพลาด: ' + (data.message || 'ไม่ทราบสาเหตุ'), 'danger');
