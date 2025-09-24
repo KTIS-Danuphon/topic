@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'fd_topic_status' => $taskStatus,
             'fd_topic_importance' => $taskImportance,
             'fd_topic_participant' => $related_users,
-            'fd_topic_created_by' => '1',
+            'fd_topic_created_by' => $_SESSION['user_id'],
             'fd_topic_private' => "1",
             'fd_topic_active' => "1",
             'fd_topic_created_at' => $date_time,
