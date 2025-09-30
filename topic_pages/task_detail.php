@@ -13,6 +13,93 @@ include 'check_session.php';
     <!-- Bootstrap Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css" rel="stylesheet">
     <?php include 'style.php'; ?>
+    <style>
+        .btn-edit-header {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .btn-edit-header:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-edit-header i {
+            font-size: 1.1rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .task-header {
+                padding: 60px 20px 30px 20px;
+            }
+
+            .btn-edit-header {
+                top: 15px;
+                right: 15px;
+                padding: 8px 16px;
+                font-size: 0.85rem;
+            }
+
+            .btn-edit-header span {
+                display: none;
+            }
+
+            .btn-edit-header i {
+                font-size: 1.2rem;
+                margin: 0;
+            }
+        }
+
+        /* Toast Notification */
+        .toast-notification {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: white;
+            padding: 20px 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: none;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+
+        .toast-notification.show {
+            display: block;
+        }
+
+        /* ทำให้ icon หมุน */
+        .spin {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -228,24 +315,27 @@ include 'check_session.php';
     </div>
 
     <!-- Task Modal -->
-    <div class="modal fade" id="task_newtopicModal" tabindex="-1" aria-labelledby="taskModalLabel" aria-hidden="true">
+    <div class="modal fade" id="task_updatetopicModal" tabindex="-1" aria-labelledby="taskModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="taskModalLabel">
-                        <i class="bi bi-clipboard-plus me-2"></i>สร้างงานใหม่
+                        <i class="bi bi-clipboard-plus me-2"></i>แก้ไขงาน
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
-                <div class="modal-body">
-                    <form id="task_newtopicForm">
+                <div class="modal-body" id="updateModalBody_load">
+                </div>
+                <div class="modal-body" id="updateModalBody">
+                    <form id="task_updatetopicForm">
+                        <input type="text" id="update_task_id">
                         <!-- หัวข้อ -->
                         <div class="mb-3">
-                            <label for="taskTitle" class="form-label">
+                            <label for="update_taskTitle" class="form-label">
                                 <i class="bi bi-card-text me-1"></i>หัวข้อ <span class="text-danger">*</span>
                             </label>
-                            <input type="text" class="form-control" id="taskTitle" placeholder="กรุณาใส่หัวข้องาน" required>
+                            <input type="text" class="form-control" id="update_taskTitle" placeholder="กรุณาใส่หัวข้องาน" required>
                             <div class="invalid-feedback">
                                 กรุณาใส่หัวข้องาน
                             </div>
@@ -253,10 +343,10 @@ include 'check_session.php';
 
                         <!-- หมวดหมู่ -->
                         <div class="mb-3">
-                            <label for="taskCategory" class="form-label">
+                            <label for="update_taskCategory" class="form-label">
                                 <i class="bi bi-tags me-1"></i>หมวดหมู่
                             </label>
-                            <select class="form-select" id="taskCategory" required>
+                            <select class="form-select" id="update_taskCategory" required>
                                 <option value="" selected disabled>เลือกหมวดหมู่</option>
                                 <option value="development">พัฒนาระบบ</option>
                                 <option value="design">ออกแบบ</option>
@@ -268,11 +358,11 @@ include 'check_session.php';
 
                         <!-- รายละเอียด -->
                         <div class="mb-3">
-                            <label for="taskDescription" class="form-label">
+                            <label for="update_taskDescription" class="form-label">
                                 <i class="bi bi-file-text me-1"></i>รายละเอียด
                             </label>
                             <div class="position-relative">
-                                <textarea class="form-control" id="taskDescription" rows="4"
+                                <textarea class="form-control" id="update_taskDescription" rows="4"
                                     placeholder="กรุณาใส่รายละเอียดงาน สามารถใช้ @ เพื่อ mention ผู้ใช้อื่น" required></textarea>
                                 <div class="invalid-feedback">
                                     กรุณาใส่รายละเอียดงาน
@@ -344,7 +434,8 @@ include 'check_session.php';
             </div>
         </div>
     </div>
-
+    <!-- Toast Notification -->
+    <div id="toast" class="toast-notification"></div>
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -391,25 +482,116 @@ include 'check_session.php';
             };
             return importances[importance] || 'อื่นๆ';
         }
+
+        // Global variables
+        // let currentPage = 1;
+        // let itemsPerPage = 10;
+        // let totalItems = 0;
+        // let totalPages = 0;
+        // let currentFilter = 'all';
+        // let currentSort = 'date_desc';
+        // let currentSearch = '';
+        // let isLoading = false;
+        // let allTasks = [];
+        // let filteredTasks = [];
+        // let viewMode = 'grid';
+        let users_list = []; //เก็บ id user ไว้โชว์ให้เลือก ผู้ใช้ ที่เกี่ยวข้อง
+        let mockTasks = [];
+    </script>
+
+    <script>
+        // โชว์แจ้งเตือน มุมขวาบน 
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            toast.className = `toast-notification toast-${type} show`;
+            toast.innerHTML = `
+                <i class="bi bi-${type === 'success' ? 'check-circle' : type === 'error' ? 'x-circle' : 'info-circle'} me-2"></i>
+                ${message}
+            `;
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // ปุ่มแก้ไข 
+        async function handleEdit(id) {
+            // เปิด modal
+            const editModal = new bootstrap.Modal(document.getElementById('task_updatetopicModal'));
+            editModal.show();
+
+            const old_updateModalBody = document.getElementById("updateModalBody").innerHTML;
+            // ใส่ข้อความ "กำลังโหลด"
+
+            updateModalBody = document.getElementById("updateModalBody");
+            updateModalBody.hidden = true;
+
+            updateModalBody_load = document.getElementById("updateModalBody_load");
+            updateModalBody_load.hidden = false;
+            updateModalBody_load.innerHTML = `
+        <div class="loading">
+            <i class="bi bi-arrow-repeat spin me-2"></i> กำลังโหลด...
+        </div>
+    `;
+
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+
+                // ดึงค่า task_id
+                let taskId = urlParams.get("taskID");
+                // เรียก API
+                const response = await fetch(`../topic_api/get_task_detail.php?task_id=${taskId}`);
+                const data = await response.json();
+                const tasks = data.tasks[0];
+                const tasks_file = data.tasks_file;
+                const task_participant = data.task_participant;
+                console.log('data535:', tasks);
+                updateModalBody.hidden = false;
+                updateModalBody_load.hidden = true;
+
+
+                document.getElementById('update_task_id').value = tasks.id; //id งาน
+                document.getElementById('update_taskTitle').value = tasks.title; // หัวข้อ
+                const select = document.getElementById("update_taskCategory"); //หมวดหมู่
+                if (select) {
+                    select.value = tasks.category; // ตั้งค่าตรงๆ
+                }
+                document.getElementById('update_taskDescription').value = tasks.task_detail; // รายละเอียด
+                mentionUsers = JSON.parse(tasks.task_mentioned);
+
+                //ผู้ที่เกี่ยวข้อง
+                selectedUsers = JSON.parse(tasks.task_participant);
+                updateUserTagsDisplay();
+                populateUserDropdown();
+                // const userSelect = document.getElementById('userSelect');
+                // userSelect.classList.remove('d-none');
+                // userSelect.focus();
+
+                // Add change event listener
+                userSelect.onchange = function() {
+                    if (this.value) {
+                        addUser(parseInt(this.value));
+                        this.value = '';
+                        hideUserDropdown();
+                    }
+                };
+                // แสดงผลข้อมูลที่ได้แทนข้อความโหลด
+
+            } catch (err) {
+                console.error("โหลดข้อมูลผิดพลาด:", err);
+                document.getElementById("updateModalBody").innerHTML = `
+                <div class="text-danger">โหลดข้อมูลไม่สำเร็จ</div>
+            `;
+            }
+
+            // showToast('เปิดหน้าแก้ไขงาน...', 'info');
+            // console.log('Edit task');
+        }
     </script>
 
     <!-- สคริปฟิลเตอร์ -->
     <script>
-        // Global variables
-        let currentPage = 1;
-        let itemsPerPage = 10;
-        let totalItems = 0;
-        let totalPages = 0;
-        let currentFilter = 'all';
-        let currentSort = 'date_desc';
-        let currentSearch = '';
-        let isLoading = false;
-        let allTasks = [];
-        let filteredTasks = [];
-        let viewMode = 'grid';
-        let users_list = [];
-        let mockTasks = [];
-        async function api_loadUsers() {
+        async function api_loadUsers() { //โหลดรายชื่อผู้ใช้
             try {
                 const response = await fetch(`../topic_api/get_user.php`);
 
@@ -425,7 +607,7 @@ include 'check_session.php';
                     console.warn("API response ไม่มี users array", data);
                 }
 
-                console.log('users', users_list);
+                console.log('users:565', users_list);
 
             } catch (error) {
                 console.error('Error loading users:', error);
@@ -443,10 +625,12 @@ include 'check_session.php';
                 const data = await response.json();
                 const tasks = data.tasks;
                 const tasks_file = data.tasks_file;
+                const task_participant = data.task_participant;
 
                 // แสดงผลใน console
-                console.log('tasks', tasks);
-                console.log('tasks_file', tasks_file);
+                console.log('tasks:586', tasks);
+                console.log('tasks_file:587', tasks_file);
+                console.log('task_participant:588', task_participant);
                 // mockTasks.length = 0; // ล้าง array
                 // mockTasks.push(...data.tasks); // ใส่ค่าใหม่
                 // mockTasks = [...data.tasks];
@@ -459,9 +643,9 @@ include 'check_session.php';
                 // updateSidebarCounts();
                 const container = document.getElementById('tasksContainer');
                 const container_real = document.getElementById('tasksContainer_real');
-                const startIndex = (currentPage - 1) * itemsPerPage;
-                const endIndex = startIndex + itemsPerPage;
-                const tasksToShow = filteredTasks.slice(startIndex, endIndex);
+                // const startIndex = (currentPage - 1) * itemsPerPage;
+                // const endIndex = startIndex + itemsPerPage;
+                // const tasksToShow = filteredTasks.slice(startIndex, endIndex);
 
                 if (data.status === "error") {
                     container.innerHTML = `
@@ -489,13 +673,16 @@ include 'check_session.php';
 
                         // แปลง \n → <br>
                         text = text.replace(/\n/g, "<br>");
-                        // แปลงจาก "[3,1,2]" → [3,1,2]
-                        const participantIds = JSON.parse(task.task_participant);
+
                         return `
                     <div class="task-container">
                         <div class="task-card">
                             <!-- Task Header -->
                             <div class="task-header">
+                                <button class="btn-edit-header" onclick="handleEdit('${taskId}')">
+                                    <i class="bi bi-pencil-square"></i>
+                                    <span>แก้ไข</span>
+                                </button>
                                 <h1 class="task-title">${task.title}</h1>
                                 <div class="task-meta">
                                     <span class="category-badge">
@@ -545,11 +732,10 @@ include 'check_session.php';
                                                 <i class="bi bi-people text-info"></i>ผู้เกี่ยวข้อง
                                             </h3>
                                             <div class="user-badges">
-                                            ${participantIds.map(id => {
-                                                const user = users_list.find(u => u.id === id);
+                                            ${task_participant.map(name => {
                                                 return `
                                                 <div class="user-badge">
-                                                    <i class="bi bi-person-circle"></i> ${user ? user.name : `ไม่พบชื่อ (id=${id})`}
+                                                    <i class="bi bi-person-circle"></i> ${name.fd_user_fullname}
                                                 </div>
                                                 `;
                                             }).join('')}
@@ -559,102 +745,74 @@ include 'check_session.php';
                                 </div>
 
                                 <!-- Files Section -->
+                                <!-- เช็คว่ามีไฟล์ไหม -->
+                                ${tasks_file && tasks_file.length > 0 ? `
                                 <div class="section">
                                     <h3 class="section-title">
-                                        <i class="bi bi-paperclip text-success"></i>ไฟล์แนบ (5 ไฟล์)
+                                        <i class="bi bi-paperclip text-success"></i>ไฟล์แนบ (${tasks_file.length} ไฟล์)
                                     </h3>
                                     <div class="files-grid">
-                                        <div class="file-card">
-                                            <div class="file-icon document">
-                                                <i class="bi bi-file-word"></i>
-                                            </div>
-                                            <div class="file-info">
-                                                <div class="file-name">ความต้องการระบบ.docx</div>
-                                                <!-- <div class="file-meta">
-                                                    <span>2.4 MB</span>
-                                                    <span>Word Document</span>
-                                                </div> -->
-                                            </div>
-                                        </div>
-
-                                        <div class="file-card">
-                                            <div class="file-icon pdf">
-                                                <i class="bi bi-file-pdf"></i>
-                                            </div>
-                                            <div class="file-info">
-                                                <div class="file-name">แผนผังฐานข้อมูล.pdf</div>
-                                                <!-- <div class="file-meta">
-                                                    <span>1.8 MB</span>
-                                                    <span>PDF Document</span>
-                                                </div> -->
-                                            </div>
-                                        </div>
-
+                                      ${tasks_file.map(file => `
+                                      <a href="../file_upload/${file.file_path}" target="_blank">
+                                        ${file.file_type ==  'png' ? `
                                         <div class="file-card">
                                             <div class="file-icon image">
                                                 <i class="bi bi-file-image"></i>
                                             </div>
                                             <div class="file-info">
-                                                <div class="file-name">mockup-homepage.png</div>
-                                                <!-- <div class="file-meta">
-                                                    <span>856 KB</span>
-                                                    <span>PNG Image</span>
-                                                </div> -->
+                                                <div class="file-name"> ${file.file_path.substring(22)}</div>
                                             </div>
                                         </div>
-
+                                        ` : ``}
+                                        ${file.file_type ==  'jpg' ? `
                                         <div class="file-card">
-                                            <div class="file-icon archive">
-                                                <i class="bi bi-file-zip"></i>
+                                            <div class="file-icon image">
+                                                <i class="bi bi-file-image"></i>
                                             </div>
                                             <div class="file-info">
-                                                <div class="file-name">wireframes-complete.zip</div>
-                                                <!-- <div class="file-meta">
-                                                    <span>12.3 MB</span>
-                                                    <span>ZIP Archive</span>
-                                                </div> -->
+                                                <div class="file-name"> ${file.file_path.substring(22)}</div>
                                             </div>
                                         </div>
-
+                                        ` : ``}
+                                        ${file.file_type ==  'pdf' ? `
+                                        <div class="file-card">
+                                            <div class="file-icon pdf">
+                                                <i class="bi bi-file-pdf"></i>
+                                            </div>
+                                            <div class="file-info">
+                                                <div class="file-name"> ${file.file_path.substring(22)}</div>
+                                            </div>
+                                        </div>
+                                        ` : ``}
+                                        ${file.file_type ==  'word' ? `
+                                        <div class="file-card">
+                                            <div class="file-icon document">
+                                                <i class="bi bi-file-word"></i>
+                                            </div>
+                                            <div class="file-info">
+                                                <div class="file-name"> ${file.file_path.substring(22)}</div>
+                                            </div>
+                                        </div>
+                                        ` : ``}
+                                        ${file.file_type ==  'excel' ? `
                                         <div class="file-card">
                                             <div class="file-icon document">
                                                 <i class="bi bi-file-excel"></i>
                                             </div>
                                             <div class="file-info">
-                                                <div class="file-name">งบประมาณโครงการ.xlsx</div>
-                                                <!-- <div class="file-meta">
-                                                    <span>445 KB</span>
-                                                    <span>Excel Spreadsheet</span>
-                                                </div> -->
+                                                <div class="file-name"> ${file.file_path.substring(22)}</div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
+                                        </a>
+                                        ` : ``}
+                                        
 
-                                <!-- Statistics -->
-                                <div class="section">
-                                    <h3 class="section-title">
-                                        <i class="bi bi-bar-chart text-primary"></i>สถิติงาน
-                                    </h3>
-                                    <div class="stats-grid">
-                                        <div class="stat-card">
-                                            <div class="stat-number">6</div>
-                                            <div class="stat-label">ผู้ร่วมงานทั้งหมด</div>
-                                        </div>
-                                        <div class="stat-card">
-                                            <div class="stat-number">5</div>
-                                            <div class="stat-label">ไฟล์แนบ</div>
-                                        </div>
-                                        <div class="stat-card">
-                                            <div class="stat-number">17.8 MB</div>
-                                            <div class="stat-label">ขนาดไฟล์รวม</div>
-                                        </div>
-                                        <div class="stat-card">
-                                            <div class="stat-number">3</div>
-                                            <div class="stat-label">ผู้ถูก Mention</div>
-                                        </div>
-                                    </div>
+
+                                      `).join('')}
+                                  </div>
                                 </div>
+                                ` : ``}
+                              
                             </div>
                         </div>
                     </div>
@@ -668,13 +826,111 @@ include 'check_session.php';
                 console.error('Error loading tasks:', error);
             }
         }
+
+        //  <div class="section">
+        //                             <h3 class="section-title">
+        //                                 <i class="bi bi-paperclip text-success"></i>ไฟล์แนบ (5 ไฟล์)
+        //                             </h3>
+        //                             <div class="files-grid">
+        //                                 <div class="file-card">
+        //                                     <div class="file-icon document">
+        //                                         <i class="bi bi-file-word"></i>
+        //                                     </div>
+        //                                     <div class="file-info">
+        //                                         <div class="file-name">ความต้องการระบบ.docx</div>
+        //                                         <!-- <div class="file-meta">
+        //                                             <span>2.4 MB</span>
+        //                                             <span>Word Document</span>
+        //                                         </div> -->
+        //                                     </div>
+        //                                 </div>
+
+        //                                 <div class="file-card">
+        //                                     <div class="file-icon pdf">
+        //                                         <i class="bi bi-file-pdf"></i>
+        //                                     </div>
+        //                                     <div class="file-info">
+        //                                         <div class="file-name">แผนผังฐานข้อมูล.pdf</div>
+        //                                         <!-- <div class="file-meta">
+        //                                             <span>1.8 MB</span>
+        //                                             <span>PDF Document</span>
+        //                                         </div> -->
+        //                                     </div>
+        //                                 </div>
+
+        //                                 <div class="file-card">
+        //                                     <div class="file-icon image">
+        //                                         <i class="bi bi-file-image"></i>
+        //                                     </div>
+        //                                     <div class="file-info">
+        //                                         <div class="file-name">mockup-homepage.png</div>
+        //                                         <!-- <div class="file-meta">
+        //                                             <span>856 KB</span>
+        //                                             <span>PNG Image</span>
+        //                                         </div> -->
+        //                                     </div>
+        //                                 </div>
+
+        //                                 <div class="file-card">
+        //                                     <div class="file-icon archive">
+        //                                         <i class="bi bi-file-zip"></i>
+        //                                     </div>
+        //                                     <div class="file-info">
+        //                                         <div class="file-name">wireframes-complete.zip</div>
+        //                                         <!-- <div class="file-meta">
+        //                                             <span>12.3 MB</span>
+        //                                             <span>ZIP Archive</span>
+        //                                         </div> -->
+        //                                     </div>
+        //                                 </div>
+
+        //                                 <div class="file-card">
+        //                                     <div class="file-icon document">
+        //                                         <i class="bi bi-file-excel"></i>
+        //                                     </div>
+        //                                     <div class="file-info">
+        //                                         <div class="file-name">งบประมาณโครงการ.xlsx</div>
+        //                                         <!-- <div class="file-meta">
+        //                                             <span>445 KB</span>
+        //                                             <span>Excel Spreadsheet</span>
+        //                                         </div> -->
+        //                                     </div>
+        //                                 </div>
+        //                             </div>
+        //                         </div>
+
+        //                         <!-- Statistics -->
+        //                         <div class="section">
+        //                             <h3 class="section-title">
+        //                                 <i class="bi bi-bar-chart text-primary"></i>สถิติงาน
+        //                             </h3>
+        //                             <div class="stats-grid">
+        //                                 <div class="stat-card">
+        //                                     <div class="stat-number">6</div>
+        //                                     <div class="stat-label">ผู้ร่วมงานทั้งหมด</div>
+        //                                 </div>
+        //                                 <div class="stat-card">
+        //                                     <div class="stat-number">5</div>
+        //                                     <div class="stat-label">ไฟล์แนบ</div>
+        //                                 </div>
+        //                                 <div class="stat-card">
+        //                                     <div class="stat-number">17.8 MB</div>
+        //                                     <div class="stat-label">ขนาดไฟล์รวม</div>
+        //                                 </div>
+        //                                 <div class="stat-card">
+        //                                     <div class="stat-number">3</div>
+        //                                     <div class="stat-label">ผู้ถูก Mention</div>
+        //                                 </div>
+        //                             </div>
+        //                         </div>
+
         document.addEventListener("DOMContentLoaded", function() {
             // ดึง query string จาก URL ปัจจุบัน
             const urlParams = new URLSearchParams(window.location.search);
 
             // ดึงค่า task_id
-            const taskId = urlParams.get("taskID"); // ถ้าไม่มีค่าจะได้ null
-            console.log(taskId);
+            let taskId = urlParams.get("taskID"); // ถ้าไม่มีค่าจะได้ null
+            console.log('taskId', taskId);
             api_loadUsers();
             api_loadTasks(taskId);
 
@@ -1085,8 +1341,8 @@ include 'check_session.php';
         // ];
 
         // Global variables
-        let selectedUsers = [];
-        let mentionUsers = [];
+        let selectedUsers = []; //เก็บ ไอดี ผู้ที่เกี่ยวข้อง
+        let mentionUsers = []; //เก็บ ชื่อ ไอดี ที่ถูกกล่าวถึง
         let fileInputCounter = 1;
         let currentMentionStart = -1;
         let selectedMentionIndex = -1;
@@ -1101,7 +1357,7 @@ include 'check_session.php';
 
         // Modal Events Setup
         function setupModalEvents() {
-            const modal = document.getElementById('task_newtopicModal');
+            const modal = document.getElementById('task_updatetopicModal');
 
             modal.addEventListener('hidden.bs.modal', function() {
                 resetForm();
@@ -1125,8 +1381,8 @@ include 'check_session.php';
 
         // Form Reset
         function resetForm() {
-            document.getElementById('task_newtopicForm').reset();
-            document.getElementById('task_newtopicForm').classList.remove('was-validated');
+            document.getElementById('task_updatetopicForm').reset();
+            document.getElementById('task_updatetopicForm').classList.remove('was-validated');
             selectedUsers = [];
             mentionUsers = [];
             fileInputCounter = 1;
@@ -1141,7 +1397,7 @@ include 'check_session.php';
             const userSelect = document.getElementById('userSelect');
             userSelect.innerHTML = '<option value="">เลือกผู้ใช้</option>';
 
-            users.forEach(user => {
+            users_list.forEach(user => {
                 if (!selectedUsers.find(u => u.id === user.id)) {
                     const option = document.createElement('option');
                     option.value = user.id;
@@ -1189,7 +1445,7 @@ include 'check_session.php';
         function updateUserTagsDisplay() {
             const container = document.getElementById('userTagsContainer');
             container.innerHTML = '';
-
+            console.log(selectedUsers);
             selectedUsers.forEach(user => {
                 const userTag = document.createElement('span');
                 userTag.className = 'user-tag';
@@ -1212,7 +1468,7 @@ include 'check_session.php';
 
         // Mention System
         function setupMentionSystem() {
-            const textarea = document.getElementById('taskDescription');
+            const textarea = document.getElementById('update_taskDescription');
             const dropdown = document.getElementById('mentionDropdown');
 
             textarea.addEventListener('input', function(e) {
@@ -1285,7 +1541,7 @@ include 'check_session.php';
             const dropdown = document.getElementById('mentionDropdown');
 
             // Filter users based on query
-            const filteredUsers = users.filter(user =>
+            const filteredUsers = users_list.filter(user =>
                 user.name.toLowerCase().includes(query.toLowerCase()) ||
                 user.username.toLowerCase().includes(query.toLowerCase())
             );
@@ -1306,7 +1562,7 @@ include 'check_session.php';
                     </div>
                     <div class="mention-info">
                         <div class="mention-name">${user.name}</div>
-                        <div class="mention-username">@${user.username}</div>
+                        <!-- <div class="mention-username">@${user.username}</div> -->
                     </div>
                 `;
 
@@ -1333,7 +1589,7 @@ include 'check_session.php';
         }
 
         function selectMentionUser(user) {
-            const textarea = document.getElementById('taskDescription');
+            const textarea = document.getElementById('update_taskDescription');
             const cursorPos = textarea.selectionStart;
             const text = textarea.value;
 
@@ -1369,10 +1625,10 @@ include 'check_session.php';
         }
 
         function updateMentionUsers() {
-            const text = document.getElementById("taskDescription").value;
+            const text = document.getElementById('update_taskDescription').value;
 
             // สร้าง array ใหม่จาก text ที่ตรงจริง ๆ
-            const foundUsers = users.filter(user => {
+            const foundUsers = users_list.filter(user => {
                 const pattern = new RegExp(`@\\${user.name}\\,`, "g");
                 return pattern.test(text);
             });
@@ -1386,7 +1642,7 @@ include 'check_session.php';
             console.log("mentionUsers:", mentionUsers);
         }
 
-        document.getElementById("taskDescription").addEventListener("input", updateMentionUsers);
+        document.getElementById('update_taskDescription').addEventListener("input", updateMentionUsers);
 
         function hideMentionDropdown() {
             document.getElementById('mentionDropdown').style.display = 'none';
@@ -1579,7 +1835,7 @@ include 'check_session.php';
 
         // Form Validation & Save
         function validateForm() {
-            const form = document.getElementById('task_newtopicForm');
+            const form = document.getElementById('task_updatetopicForm');
             const title = document.getElementById('taskTitle');
 
             let isValid = true;
@@ -1620,7 +1876,7 @@ include 'check_session.php';
             const formData = {
                 title: document.getElementById('taskTitle').value.trim(),
                 category: document.getElementById('taskCategory').value,
-                description: document.getElementById('taskDescription').value.trim(),
+                description: document.getElementById('update_taskDescription').value.trim(),
                 staus: document.getElementById('taskStatus').value,
                 relatedUsers: selectedUsers.map(user => user.id),
                 mentionedUsers: mentionUsers.map(user => user.id),
@@ -1659,7 +1915,7 @@ include 'check_session.php';
                 // showAlert('บันทึกงานสำเร็จ!', 'success');
 
                 // Close modal
-                const modal = bootstrap.Modal.getInstance(document.getElementById('task_newtopicModal'));
+                const modal = bootstrap.Modal.getInstance(document.getElementById('task_updatetopicModal'));
                 modal.hide();
 
                 // In real implementation, call API here:
@@ -1696,7 +1952,7 @@ include 'check_session.php';
                 .then(data => {
                     if (data.status === "success") {
                         showAlert('บันทึกงานสำเร็จ!', 'success');
-                        // const modal = bootstrap.Modal.getInstance(document.getElementById('task_newtopicModal'));
+                        // const modal = bootstrap.Modal.getInstance(document.getElementById('task_updatetopicModal'));
                         // modal.hide();
                         // Optionally reload page or update UI
                     } else {
@@ -1733,7 +1989,10 @@ include 'check_session.php';
                     if (data.success && Array.isArray(data.data)) {
                         // Update global users array
                         users.length = 0;
+                        showAlert('555', 'warning');
+                        console.log(5555);
                         users.push(...data.data);
+
                         populateUserDropdown();
                     } else {
                         console.error('Invalid API response:', data);
@@ -1823,7 +2082,7 @@ include 'check_session.php';
     <script>
         function resetinput_Form() {
             // เลือก form
-            const form = document.getElementById('task_newtopicForm');
+            const form = document.getElementById('task_updatetopicForm');
             if (!form) {
                 console.warn('ไม่พบ form #taskForm');
                 return;
