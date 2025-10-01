@@ -14,10 +14,27 @@ include 'check_session.php';
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css" rel="stylesheet">
     <?php include 'style.php'; ?>
     <style>
-        .btn-edit-header {
+        .btn-header {
             position: absolute;
             top: 20px;
             right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .btn-edit-header {
             background: rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(10px);
             border: 2px solid rgba(255, 255, 255, 0.3);
@@ -129,186 +146,6 @@ include 'check_session.php';
                 <div id="tasksContainer" class="fade-in" style="margin-top:5%">
                     <!-- Tasks will be loaded here -->
                 </div>
-                <div id="tasksContainer_real" class="page-header fade-in" hidden>
-                    <div class="task-container">
-                        <div class="task-card">
-                            <!-- Task Header -->
-                            <div class="task-header">
-                                <h1 class="task-title">พัฒนาระบบจัดการงานใหม่สำหรับบริษัท</h1>
-                                <div class="task-meta">
-                                    <span class="category-badge">
-                                        <i class="bi bi-code-slash me-1"></i>พัฒนาระบบ
-                                    </span>
-                                    <span class="task-id">
-                                        <i class="bi bi-hash me-1"></i>TASK-2025-001
-                                    </span>
-                                    <span class="created-date">
-                                        <i class="bi bi-calendar3 me-1"></i>15 ก.ย. 2567 14:30
-                                    </span>
-                                    <span class="status-badge ">
-                                        <i class="bi bi-clock me-1"></i>รอดำเนินการ
-                                    </span>
-                                </div>
-                            </div>
-
-                            <!-- Task Body -->
-                            <div class="task-body">
-                                <!-- Description Section -->
-                                <div class="section">
-                                    <h3 class="section-title">
-                                        <i class="bi bi-file-text text-primary"></i>รายละเอียด
-                                    </h3>
-                                    <div class="description-box">ต้องการพัฒนาระบบจัดการงานใหม่ที่มีฟีเจอร์ครบครัน สามารถ mention ผู้ใช้ได้โปรดให้
-                                        <span class="mention-highlight">@[สมชาย จันทร์เพ็ญ]</span> ดูแลส่วน Backend และ <span class="mention-highlight">@[สุดา ใจดี]</span> ดูแลส่วน Frontend
-
-                                        ความต้องการหลัก:
-                                        • ระบบ Authentication และ Authorization
-                                        • ระบบจัดการงานและโปรเจค
-                                        • ระบบแจ้งเตือน Real-time
-                                        • ระบบรายงานและสถิติ
-                                        • API สำหรับ Mobile App
-
-                                        กำหนดส่ง: ภายใน 3 เดือน
-                                        งบประมาณ: 500,000 บาท
-
-                                        หมายเหตุ: โปรดประสานงานกับ
-                                        <span class="mention-highlight">@[วิชัย สมบูรณ์]</span> เรื่องการออกแบบ Database
-                                    </div>
-                                </div>
-
-                                <!-- Users Section -->
-                                <div class="section">
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <h3 class="section-title">
-                                                <i class="bi bi-at text-warning"></i>ผู้สร้างรายการ
-                                            </h3>
-                                            <div class="user-badges">
-                                                <div class="user-badge mentioned">
-                                                    <i class="bi bi-person-fill-check"></i>สมชาย จันทร์เพ็ญ
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-12">
-                                            <h3 class="section-title">
-                                                <i class="bi bi-people text-info"></i>ผู้เกี่ยวข้อง
-                                            </h3>
-                                            <div class="user-badges">
-                                                <div class="user-badge">
-                                                    <i class="bi bi-person-circle"></i>นิรันดร์ วงศ์ดี
-                                                </div>
-                                                <div class="user-badge">
-                                                    <i class="bi bi-person-circle"></i>อรทัย บุญมี
-                                                </div>
-                                                <div class="user-badge">
-                                                    <i class="bi bi-person-circle"></i>ธนา กิจดี
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Files Section -->
-                                <div class="section">
-                                    <h3 class="section-title">
-                                        <i class="bi bi-paperclip text-success"></i>ไฟล์แนบ (5 ไฟล์)
-                                    </h3>
-                                    <div class="files-grid">
-                                        <div class="file-card">
-                                            <div class="file-icon document">
-                                                <i class="bi bi-file-word"></i>
-                                            </div>
-                                            <div class="file-info">
-                                                <div class="file-name">ความต้องการระบบ.docx</div>
-                                                <!-- <div class="file-meta">
-                                                    <span>2.4 MB</span>
-                                                    <span>Word Document</span>
-                                                </div> -->
-                                            </div>
-                                        </div>
-
-                                        <div class="file-card">
-                                            <div class="file-icon pdf">
-                                                <i class="bi bi-file-pdf"></i>
-                                            </div>
-                                            <div class="file-info">
-                                                <div class="file-name">แผนผังฐานข้อมูล.pdf</div>
-                                                <!-- <div class="file-meta">
-                                                    <span>1.8 MB</span>
-                                                    <span>PDF Document</span>
-                                                </div> -->
-                                            </div>
-                                        </div>
-
-                                        <div class="file-card">
-                                            <div class="file-icon image">
-                                                <i class="bi bi-file-image"></i>
-                                            </div>
-                                            <div class="file-info">
-                                                <div class="file-name">mockup-homepage.png</div>
-                                                <!-- <div class="file-meta">
-                                                    <span>856 KB</span>
-                                                    <span>PNG Image</span>
-                                                </div> -->
-                                            </div>
-                                        </div>
-
-                                        <div class="file-card">
-                                            <div class="file-icon archive">
-                                                <i class="bi bi-file-zip"></i>
-                                            </div>
-                                            <div class="file-info">
-                                                <div class="file-name">wireframes-complete.zip</div>
-                                                <!-- <div class="file-meta">
-                                                    <span>12.3 MB</span>
-                                                    <span>ZIP Archive</span>
-                                                </div> -->
-                                            </div>
-                                        </div>
-
-                                        <div class="file-card">
-                                            <div class="file-icon document">
-                                                <i class="bi bi-file-excel"></i>
-                                            </div>
-                                            <div class="file-info">
-                                                <div class="file-name">งบประมาณโครงการ.xlsx</div>
-                                                <!-- <div class="file-meta">
-                                                    <span>445 KB</span>
-                                                    <span>Excel Spreadsheet</span>
-                                                </div> -->
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Statistics -->
-                                <div class="section">
-                                    <h3 class="section-title">
-                                        <i class="bi bi-bar-chart text-primary"></i>สถิติงาน
-                                    </h3>
-                                    <div class="stats-grid">
-                                        <div class="stat-card">
-                                            <div class="stat-number">6</div>
-                                            <div class="stat-label">ผู้ร่วมงานทั้งหมด</div>
-                                        </div>
-                                        <div class="stat-card">
-                                            <div class="stat-number">5</div>
-                                            <div class="stat-label">ไฟล์แนบ</div>
-                                        </div>
-                                        <div class="stat-card">
-                                            <div class="stat-number">17.8 MB</div>
-                                            <div class="stat-label">ขนาดไฟล์รวม</div>
-                                        </div>
-                                        <div class="stat-card">
-                                            <div class="stat-number">3</div>
-                                            <div class="stat-label">ผู้ถูก Mention</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
             </div>
         </div>
@@ -376,7 +213,7 @@ include 'check_session.php';
                         </div>
 
                         <!-- ผู้เกี่ยวข้อง -->
-                        <div class="mb-3">
+                        <div class="mb-3 position-relative" id="userSection">
                             <label class="form-label">
                                 <i class="bi bi-people me-1"></i>ผู้เกี่ยวข้อง
                             </label>
@@ -388,18 +225,55 @@ include 'check_session.php';
                             <select class="form-select mt-2 d-none" id="userSelect">
                                 <option value="">เลือกผู้ใช้</option>
                             </select>
+
+                            <!-- 🔒 overlay ใสๆ -->
+                            <div id="userSectionOverlay"></div>
                         </div>
+
+                        <style>
+                            /* overlay ใส ครอบเต็มกล่อง */
+                            #userSectionOverlay {
+                                display: none;
+                                /* เริ่มต้นซ่อนไว้ */
+                                position: absolute;
+                                top: 0;
+                                left: 0;
+                                right: 0;
+                                bottom: 0;
+                                background: rgba(255, 255, 255, 0);
+                                /* โปร่งใส */
+                                cursor: not-allowed;
+                                /* เมาส์เป็นรูปห้าม */
+                                z-index: 10;
+                                /* ซ้อนบนสุด */
+                            }
+                        </style>
+
 
                         <!-- สถานะ -->
                         <div class="mb-3">
-                            <label for="taskStatus" class="form-label">
+                            <label for="update_taskStatus" class="form-label">
                                 <i class="bi bi-bookmark-star me-1"></i>สถานะการทำงาน
                             </label>
-                            <select class="form-select" id="taskStatus" required>
+                            <select class="form-select" id="update_taskStatus" required>
                                 <option value="" selected disabled>เลือกสถานะการทำงาน</option>
                                 <option value="pending">รอดำเนินการ</option>
                                 <option value="in-progress">กำลังดำเนินการ</option>
                                 <option value="completed">เสร็จสิ้น</option>
+                            </select>
+                        </div>
+
+                        <!-- ความสำคัญ -->
+                        <div class="mb-3">
+                            <label for="update_taskImportance" class="form-label">
+                                <i class="bi bi-stars me-1"></i>ความสำคัญของงาน
+                            </label>
+                            <select class="form-select" id="update_taskImportance" required>
+                                <option value="" selected disabled>เลือกความสำคัญ</option>
+                                <option value="1">ต่ำ</option>
+                                <option value="2">ปานกลาง</option>
+                                <option value="3">สูง</option>
+                                <option value="4">สำคัญมาก</option>
                             </select>
                         </div>
 
@@ -408,6 +282,8 @@ include 'check_session.php';
                             <label class="form-label">
                                 <i class="bi bi-paperclip me-1"></i>ไฟล์แนบ
                             </label>
+                            <div class="file-attachments" id="fileAttachments_old"></div>
+
                             <div class="file-attachments" id="fileAttachments">
                                 <div class="file-input-container" data-file-index="1">
                                     <input type="file" class="file-input-hidden" id="fileInput1" accept="*/*">
@@ -427,7 +303,7 @@ include 'check_session.php';
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         <i class="bi bi-x-circle me-1"></i>ยกเลิก
                     </button>
-                    <button id="saveBtn" type="button" class="btn btn-primary" onclick="saveTask()">
+                    <button id="updateBtn" type="button" class="btn btn-primary" onclick="updateTask()">
                         <i class="bi bi-check-circle me-1"></i>บันทึก
                     </button>
                 </div>
@@ -484,19 +360,9 @@ include 'check_session.php';
         }
 
         // Global variables
-        // let currentPage = 1;
-        // let itemsPerPage = 10;
-        // let totalItems = 0;
-        // let totalPages = 0;
-        // let currentFilter = 'all';
-        // let currentSort = 'date_desc';
-        // let currentSearch = '';
-        // let isLoading = false;
-        // let allTasks = [];
-        // let filteredTasks = [];
-        // let viewMode = 'grid';
         let users_list = []; //เก็บ id user ไว้โชว์ให้เลือก ผู้ใช้ ที่เกี่ยวข้อง
-        let mockTasks = [];
+        // let mockTasks = [];
+        let filesToDelete = []; // array เก็บ id ไฟล์ที่ผู้ใช้เลือกจะลบ
     </script>
 
     <script>
@@ -542,50 +408,207 @@ include 'check_session.php';
                 // เรียก API
                 const response = await fetch(`../topic_api/get_task_detail.php?task_id=${taskId}`);
                 const data = await response.json();
-                const tasks = data.tasks[0];
-                const tasks_file = data.tasks_file;
-                const task_participant = data.task_participant;
-                console.log('data535:', tasks);
-                updateModalBody.hidden = false;
-                updateModalBody_load.hidden = true;
+
+                if (data.status == "success") {
+
+                    const tasks = data.tasks[0];
+                    const tasks_file = data.tasks_file;
+                    const task_participant = data.task_participant;
+                    console.log('data535:', tasks);
+                    updateModalBody.hidden = false;
+                    updateModalBody_load.hidden = true;
 
 
-                document.getElementById('update_task_id').value = tasks.id; //id งาน
-                document.getElementById('update_taskTitle').value = tasks.title; // หัวข้อ
-                const select = document.getElementById("update_taskCategory"); //หมวดหมู่
-                if (select) {
-                    select.value = tasks.category; // ตั้งค่าตรงๆ
-                }
-                document.getElementById('update_taskDescription').value = tasks.task_detail; // รายละเอียด
-                mentionUsers = JSON.parse(tasks.task_mentioned);
-
-                //ผู้ที่เกี่ยวข้อง
-                selectedUsers = JSON.parse(tasks.task_participant);
-                updateUserTagsDisplay();
-                populateUserDropdown();
-                // const userSelect = document.getElementById('userSelect');
-                // userSelect.classList.remove('d-none');
-                // userSelect.focus();
-
-                // Add change event listener
-                userSelect.onchange = function() {
-                    if (this.value) {
-                        addUser(parseInt(this.value));
-                        this.value = '';
-                        hideUserDropdown();
+                    document.getElementById('update_task_id').value = tasks.id; //id งาน
+                    document.getElementById('update_taskTitle').value = tasks.title; // หัวข้อ
+                    const select = document.getElementById("update_taskCategory"); //หมวดหมู่
+                    if (select) {
+                        select.value = tasks.category; // ตั้งค่าตรงๆ
                     }
-                };
-                // แสดงผลข้อมูลที่ได้แทนข้อความโหลด
+                    document.getElementById('update_taskDescription').value = tasks.task_detail; // รายละเอียด
+                    mentionUsers = JSON.parse(tasks.task_mentioned);
+
+                    //ผู้ที่เกี่ยวข้อง
+                    selectedUsers = JSON.parse(tasks.task_participant);
+                    // แปลง id → object ที่มี {id, name}
+                    selectedUsers = selectedUsers.map(id => {
+                        const user = users_list.find(u => u.id === id);
+                        return user ? {
+                            id: user.id,
+                            name: user.name
+                        } : {
+                            id,
+                            name: "ไม่พบชื่อ"
+                        };
+                    });
+
+                    // เคลียร์ container ก่อน ไม่ให้ซ้ำซ้อน
+                    const container = document.getElementById("userTagsContainer");
+                    container.innerHTML = "";
+
+                    // user ปัจจุบัน + เจ้าของงาน
+                    const currentUserId = <?= $_SESSION['user_id'] ?>; // ฝั่ง PHP
+                    const taskOwnerId = tasks.created_by; // จากข้อมูล task
+                    console.log(taskOwnerId, currentUserId);
+                    // ถ้าไม่ใช่เจ้าของ → เปิด overlay
+                    if (taskOwnerId != currentUserId) {
+                        const overlay = document.getElementById("userSectionOverlay");
+                        overlay.style.display = "block";
+
+                        // กด overlay = แจ้งเตือน
+                        overlay.addEventListener("click", () => {
+                            // alert("คุณไม่มีสิทธิ์แก้ไขผู้เกี่ยวข้อง");
+                            showAlert('คุณไม่มีสิทธิ์แก้ไขผู้เกี่ยวข้อง', 'danger');
+
+                        });
+                    }
+                    // วนลูปผู้ใช้ที่เลือก
+                    //             selectedUsers.forEach(user => {
+                    //                 const userTag = `
+                    //     <div class="user-tag">
+                    //         <span>${user.name}</span>
+                    //         ${
+                    //             (taskOwnerId == currentUserId) 
+                    //             ? `<button type="button" class="btn-remove" onclick="removeUser(${user.id})" title="ลบ">
+                    //                    <i class="bi bi-x"></i>
+                    //                </button>`
+                    //             : ""
+                    //         }
+                    //     </div>
+                    // `;
+                    //                 container.insertAdjacentHTML("beforeend", userTag);
+                    //             });
+                    //             console.log(selectedUsers);
+                    // ฟังก์ชันอื่นๆ ถ้ายังต้องใช้
+                    // updateUserTagsDisplay();
+                    // populateUserDropdown();
+                    // if (taskOwnerId == currentUserId) {
+                    updateUserTagsDisplay();
+                    populateUserDropdown();
+
+                    // }
+                    // const userSelect = document.getElementById('userSelect');
+                    // userSelect.classList.remove('d-none');
+                    // userSelect.focus();
+
+                    // Add change event listener
+                    // userSelect.onchange = function() {
+                    //     if (this.value) {
+                    //         addUser(parseInt(this.value));
+                    //         this.value = '';
+                    //         hideUserDropdown();
+                    //     }
+                    // };
+                    const taskStatus = document.getElementById("update_taskStatus"); //สถานะ
+                    if (taskStatus) {
+                        taskStatus.value = tasks.status; // ตั้งค่าตรงๆ
+                    }
+
+                    const taskImportance = document.getElementById("update_taskImportance"); //ความสำคัญ
+                    if (taskImportance) {
+                        taskImportance.value = tasks.importance; // ตั้งค่าตรงๆ
+                    }
+
+
+                    function showOldFiles() { // ไฟล์เก่า
+                        const container = document.getElementById('fileAttachments_old');
+
+                        tasks_file.forEach((file) => {
+                            let icon = '<i class="bi bi-file-earmark"></i>';
+                            if (file.file_type === "pdf") icon = '<i class="bi bi-file-earmark-pdf text-danger"></i>';
+                            if (["png", "jpg", "jpeg"].includes(file.file_type)) icon = '<i class="bi bi-file-earmark-image text-primary"></i>';
+                            if (["word", "docx"].includes(file.file_type)) icon = '<i class="bi bi-file-earmark-word text-info"></i>';
+                            if (["excel", "xlsx"].includes(file.file_type)) icon = '<i class="bi bi-file-earmark-excel text-success"></i>';
+
+                            const fileName = file.file_path.split('/').pop().substring(17);
+
+                            const fileDiv = document.createElement('div');
+                            fileDiv.className = "file-old d-flex align-items-center justify-content-between mb-2";
+                            fileDiv.dataset.fileId = file.file_id;
+
+                            fileDiv.innerHTML = `
+                            <div class="d-flex align-items-center">
+                                <div class="me-2">${icon}</div>
+                                    <a href="${file.file_path}" target="_blank">${fileName}</a>
+                                    <span class="ms-2 text-danger small status-label" style="display:none;">(รอลบ)</span>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-danger ms-2 btn-toggle-delete" onclick="toggleFileDelete(${file.file_id}, this)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            `;
+
+                            container.appendChild(fileDiv);
+                        });
+                    }
+
+
+
+
+                    // เรียกตอนโหลด
+                    showOldFiles();
+                    // เริ่มนับจากจำนวนไฟล์เก่า
+                    let fileInputCounter = tasks_file.length;
+                    // แสดงผลข้อมูลที่ได้แทนข้อความโหลด
+                } else {
+                    // status ไม่ใช่ success → โยน error เอง
+                    throw new Error("API Error: " + (data.message || "ไม่สำเร็จ"));
+                }
 
             } catch (err) {
                 console.error("โหลดข้อมูลผิดพลาด:", err);
                 document.getElementById("updateModalBody").innerHTML = `
                 <div class="text-danger">โหลดข้อมูลไม่สำเร็จ</div>
             `;
+                showAlert('เกิดข้อผิดพลาด', 'danger');
+
+                // ดึง query string จาก URL ปัจจุบัน
+                const urlParams = new URLSearchParams(window.location.search);
+                // ดึงค่า task_id
+                let taskId = urlParams.get("taskID"); // ถ้าไม่มีค่าจะได้ null
+                // รอ 0.5 วิ แล้วค่อยโหลดใหม่
+                api_loadTasks(taskId);
+                setTimeout(() => {
+                    // ปิด modal ถ้า error
+                    editModal.hide();
+                    console.log("close");
+                }, 500);
             }
 
             // showToast('เปิดหน้าแก้ไขงาน...', 'info');
             // console.log('Edit task');
+        }
+
+        function toggleFileDelete(fileId, btn) {
+            const parent = btn.closest(".file-old");
+            const statusLabel = parent.querySelector(".status-label");
+
+            if (!filesToDelete.includes(fileId)) {
+                // 👉 กด "ลบ" → เข้าโหมดรอลบ
+                // alert("กำลังเตรียมลบไฟล์...");
+                showAlert('กำลังเตรียมลบไฟล์...', 'warning');
+
+                filesToDelete.push(fileId);
+
+                parent.style.opacity = "0.5";
+                statusLabel.style.display = "inline";
+
+                btn.classList.remove("btn-danger");
+                btn.classList.add("btn-secondary");
+                btn.innerHTML = '<i class="bi bi-arrow-counterclockwise"></i>'; // ปุ่มยกเลิก
+
+            } else {
+                // 👉 กด "ยกเลิก" → กลับมาปกติ
+                filesToDelete = filesToDelete.filter(id => id !== fileId);
+
+                parent.style.opacity = "1";
+                statusLabel.style.display = "none";
+
+                btn.classList.remove("btn-secondary");
+                btn.classList.add("btn-danger");
+                btn.innerHTML = '<i class="bi bi-trash"></i>'; // ปุ่มลบ
+            }
+
+            console.log("Files queued for delete:", filesToDelete);
         }
     </script>
 
@@ -642,7 +665,6 @@ include 'check_session.php';
                 // applyFiltersAndSort();
                 // updateSidebarCounts();
                 const container = document.getElementById('tasksContainer');
-                const container_real = document.getElementById('tasksContainer_real');
                 // const startIndex = (currentPage - 1) * itemsPerPage;
                 // const endIndex = startIndex + itemsPerPage;
                 // const tasksToShow = filteredTasks.slice(startIndex, endIndex);
@@ -655,13 +677,10 @@ include 'check_session.php';
                         <p class="text-muted">ลิงค์งานที่คุณติดตามอาจเสียหายหรืออาจได้มีการลบออกไปแล้ว</p>
                     </div>
                 `;
-                    container_real.hidden = true;
                     return;
                 } else {
-                    container_real.hidden = true;
 
                     // container.hidden = true;
-                    // container_real.hidden = false;
                     container.innerHTML = tasks.map(task => {
                         let text = task.task_detail || "";
 
@@ -679,10 +698,17 @@ include 'check_session.php';
                         <div class="task-card">
                             <!-- Task Header -->
                             <div class="task-header">
+                            <div class="btn-header">
                                 <button class="btn-edit-header" onclick="handleEdit('${taskId}')">
                                     <i class="bi bi-pencil-square"></i>
                                     <span>แก้ไข</span>
                                 </button>
+                                 <!-- ปุ่มแสดง Log -->
+                                <button class="btn-edit-header" onclick="handleShowLog('${taskId}')">
+                                    <i class="bi bi-journal-text"></i>
+                                    <span>Log</span>
+                                </button>
+                                </div>
                                 <h1 class="task-title">${task.title}</h1>
                                 <div class="task-meta">
                                     <span class="category-badge">
@@ -939,7 +965,7 @@ include 'check_session.php';
         document.addEventListener('DOMContentLoaded', function() {
             // allTasks = [...mockTasks];
             // applyFiltersAndSort();
-            // updateSidebarCounts();
+            updateSidebarCounts();
         });
 
         // Toggle sidebar for mobile
@@ -1227,15 +1253,15 @@ include 'check_session.php';
 
         // Update sidebar counts
         function updateSidebarCounts() {
-            const total = allTasks.length;
-            const pending = allTasks.filter(t => t.status === 'pending').length;
-            const inProgress = allTasks.filter(t => t.status === 'in-progress').length;
-            const completed = allTasks.filter(t => t.status === 'completed').length;
+            // const total = allTasks.length;
+            // const pending = allTasks.filter(t => t.status === 'pending').length;
+            // const inProgress = allTasks.filter(t => t.status === 'in-progress').length;
+            // const completed = allTasks.filter(t => t.status === 'completed').length;
 
-            document.getElementById('totalTaskCount').textContent = total;
-            document.getElementById('pendingTaskCount').textContent = pending;
-            document.getElementById('progressTaskCount').textContent = inProgress;
-            document.getElementById('completedTaskCount').textContent = completed;
+            document.getElementById('totalTaskCount').textContent = "";
+            document.getElementById('pendingTaskCount').textContent = "";
+            document.getElementById('progressTaskCount').textContent = "";
+            document.getElementById('completedTaskCount').textContent = "";
         }
 
         // Utility functions
@@ -1428,7 +1454,7 @@ include 'check_session.php';
         }
 
         function addUser(userId) {
-            const user = users.find(u => u.id === userId);
+            const user = users_list.find(u => u.id === userId);
             if (user && !selectedUsers.find(u => u.id === user.id)) {
                 selectedUsers.push(user);
                 updateUserTagsDisplay();
@@ -1542,8 +1568,7 @@ include 'check_session.php';
 
             // Filter users based on query
             const filteredUsers = users_list.filter(user =>
-                user.name.toLowerCase().includes(query.toLowerCase()) ||
-                user.username.toLowerCase().includes(query.toLowerCase())
+                user.name.toLowerCase().includes(query.toLowerCase())
             );
 
             if (filteredUsers.length === 0) {
@@ -1836,7 +1861,7 @@ include 'check_session.php';
         // Form Validation & Save
         function validateForm() {
             const form = document.getElementById('task_updatetopicForm');
-            const title = document.getElementById('taskTitle');
+            const title = document.getElementById('update_taskTitle');
 
             let isValid = true;
 
@@ -1855,11 +1880,23 @@ include 'check_session.php';
             return isValid;
         }
 
-        function saveTask() {
+        function updateTask() {
             if (!validateForm()) {
                 console.log('!validateForm');
                 return;
             }
+            document.getElementById('tasksContainer').innerHTML = "";
+
+            // showAlert('บันทึกการแก้ไข', 'success');
+            showAlert('เกิดข้อผิดพลาด', 'danger');
+            const modal = bootstrap.Modal.getInstance(document.getElementById('task_updatetopicModal'));
+            modal.hide();
+            // ดึง query string จาก URL ปัจจุบัน
+            const urlParams = new URLSearchParams(window.location.search);
+            // ดึงค่า task_id
+            let taskId = urlParams.get("taskID"); // ถ้าไม่มีค่าจะได้ null
+            api_loadTasks(taskId);
+
             // const btn = document.getElementById("saveBtn");
             // // ปิดการกดซ้ำ
             // btn.disabled = true;
@@ -1873,54 +1910,54 @@ include 'check_session.php';
             //     // btn.disabled = false;
             // }, 3000);
 
-            const formData = {
-                title: document.getElementById('taskTitle').value.trim(),
-                category: document.getElementById('taskCategory').value,
-                description: document.getElementById('update_taskDescription').value.trim(),
-                staus: document.getElementById('taskStatus').value,
-                relatedUsers: selectedUsers.map(user => user.id),
-                mentionedUsers: mentionUsers.map(user => user.id),
-                files: []
-            };
+            // const formData = {
+            //     title: document.getElementById('taskTitle').value.trim(),
+            //     category: document.getElementById('taskCategory').value,
+            //     description: document.getElementById('update_taskDescription').value.trim(),
+            //     staus: document.getElementById('taskStatus').value,
+            //     relatedUsers: selectedUsers.map(user => user.id),
+            //     mentionedUsers: mentionUsers.map(user => user.id),
+            //     files: []
+            // };
 
-            // Collect files
-            const fileInputs = document.querySelectorAll('.file-input-send');
-            // const fileInputs = document.querySelectorAll('.file-input-hidden');
-            fileInputs.forEach(input => {
-                if (input.files.length > 0) {
-                    formData.files.push({
-                        name: input.files[0].name,
-                        size: input.files[0].size,
-                        type: input.files[0].type,
-                        file: input.files[0]
-                    });
-                }
-            });
+            // // Collect files
+            // const fileInputs = document.querySelectorAll('.file-input-send');
+            // // const fileInputs = document.querySelectorAll('.file-input-hidden');
+            // fileInputs.forEach(input => {
+            //     if (input.files.length > 0) {
+            //         formData.files.push({
+            //             name: input.files[0].name,
+            //             size: input.files[0].size,
+            //             type: input.files[0].type,
+            //             file: input.files[0]
+            //         });
+            //     }
+            // });
 
-            console.log('Data to send:', formData);
+            // console.log('Data to send:', formData);
 
-            // Show loading state
-            const saveBtn = document.querySelector('.modal-footer .btn-primary');
-            const originalHtml = saveBtn.innerHTML;
-            saveBtn.innerHTML = '<i class="bi bi-arrow-repeat spin me-1"></i>กำลังบันทึก...';
-            saveBtn.disabled = true;
+            // // Show loading state
+            // const saveBtn = document.querySelector('.modal-footer .btn-primary');
+            // const originalHtml = saveBtn.innerHTML;
+            // saveBtn.innerHTML = '<i class="bi bi-arrow-repeat spin me-1"></i>กำลังบันทึก...';
+            // saveBtn.disabled = true;
 
-            // Simulate API call
-            setTimeout(() => {
-                // Reset button
-                // saveBtn.innerHTML = originalHtml;
-                // saveBtn.disabled = false;
+            // // Simulate API call
+            // setTimeout(() => {
+            //     // Reset button
+            //     // saveBtn.innerHTML = originalHtml;
+            //     // saveBtn.disabled = false;
 
-                // Show success message
-                // showAlert('บันทึกงานสำเร็จ!', 'success');
+            //     // Show success message
+            //     // showAlert('บันทึกงานสำเร็จ!', 'success');
 
-                // Close modal
-                const modal = bootstrap.Modal.getInstance(document.getElementById('task_updatetopicModal'));
-                modal.hide();
+            //     // Close modal
+            //     const modal = bootstrap.Modal.getInstance(document.getElementById('task_updatetopicModal'));
+            //     modal.hide();
 
-                // In real implementation, call API here:
-                saveTaskToAPI(formData);
-            }, 1500);
+            //     // In real implementation, call API here:
+            //     saveTaskToAPI(formData);
+            // }, 1500);
         }
 
         // API Integration Functions
