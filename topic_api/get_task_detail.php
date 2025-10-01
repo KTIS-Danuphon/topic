@@ -61,9 +61,24 @@ try {
     foreach ($result as $key => $row) {
         $result[$key]['encrypt_id'] = $Encrypt->EnCrypt_pass($row['id']);
     }
+
+    //ประเภทไฟล์
+    $table = 'tb_topic_files_c050968 ';
+    $fields = 'fd_file_id AS file_id, fd_file_path AS file_path, fd_file_type AS file_type, fd_file_created_at AS file_created_at,fd_file_updated_at AS file_updated_at ';
+    $where = 'WHERE fd_file_active = "1" AND fd_topic_id = ' . $task_id;
+    $result_file = $object->ReadData($table, $fields, $where);
+
+    $task_participant = trim($result[0]['task_participant'], "[]");
+    // // ชื่อผู้ที่เกี่ยวข้อง
+    $table = 'tb_users_c050968 ';
+    $fields = 'fd_user_fullname ';
+    $where = 'WHERE fd_user_active = "1" AND fd_user_id IN (' . $task_participant . ')';
+    $result_task_participant = $object->ReadData($table, $fields, $where);
     echo json_encode([
         "status" => "success",
-        "tasks"  => $result
+        "tasks"  => $result,
+        "tasks_file"  => $result_file,
+        "task_participant" => $result_task_participant
     ]);
 } catch (Exception $e) {
     echo json_encode([

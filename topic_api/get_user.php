@@ -27,7 +27,7 @@ try {
     $table = 'tb_users_c050968 ';
     $fields = 'fd_user_id AS id ,fd_user_fullname AS name ';
     // ดึง task ทั้งหมด (หรือกรองตาม user ก็ได้)
-    $where = 'WHERE fd_user_group = ' . $userGroup . ' AND fd_user_id != ' . $userID . ' AND  fd_user_active = "1"  ';
+    $where = 'WHERE fd_user_group = ' . $userGroup . ' AND  fd_user_active = "1"  ';
     $result_user = $object->ReadData($table, $fields, $where);
     echo json_encode([
         "status" => "success",
