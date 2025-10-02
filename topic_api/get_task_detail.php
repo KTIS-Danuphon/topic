@@ -44,7 +44,7 @@ try {
     } else {
         // user ทั่วไป เห็นเฉพาะที่ตัวเองเกี่ยวข้อง
         $where = "WHERE (
-        fd_topic_participant LIKE '%\"$userID\"%'     
+        fd_topic_participant LIKE '%$userID%'     
         OR fd_topic_participant LIKE '%[$userID,%'     
         OR fd_topic_participant LIKE '%,$userID,%'    
         OR fd_topic_participant LIKE '%,$userID]'
