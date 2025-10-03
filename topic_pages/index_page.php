@@ -306,23 +306,23 @@ include 'check_session.php';
 
     <!-- สคริปฟิลเตอร์ -->
     <script>
-    // =============================
-    // ตัวแปรหลักสำหรับการจัดการงาน
-    // =============================
-    let currentPage = 1; // หน้าปัจจุบัน
-    let itemsPerPage = 10; // จำนวนงานต่อหน้า
-    let totalItems = 0; // งานทั้งหมด
-    let totalPages = 0; // จำนวนหน้าทั้งหมด
-    let currentFilter = 'all'; // ฟิลเตอร์สถานะ
-    let currentSort = 'date_desc'; // การเรียงลำดับ
-    let currentSearch = '';
-    let isLoading = false;
-    let allTasks = []; // งานทั้งหมด (จาก API)
-    let filteredTasks = []; // งานที่ผ่านการฟิลเตอร์
-    let viewMode = 'grid'; // โหมดแสดงผล
-    let users_list = []; // รายชื่อผู้ใช้
-    let file_count_size = []; // ขนาดไฟล์แนบ
-    let allTasksBackup = null; // สำรองข้อมูลงานก่อนใช้ฟิลเตอร์ (เพื่อให้สามารถคืนค่าได้)
+        // =============================
+        // ตัวแปรหลักสำหรับการจัดการงาน
+        // =============================
+        let currentPage = 1; // หน้าปัจจุบัน
+        let itemsPerPage = 10; // จำนวนงานต่อหน้า
+        let totalItems = 0; // งานทั้งหมด
+        let totalPages = 0; // จำนวนหน้าทั้งหมด
+        let currentFilter = 'all'; // ฟิลเตอร์สถานะ
+        let currentSort = 'date_desc'; // การเรียงลำดับ
+        let currentSearch = '';
+        let isLoading = false;
+        let allTasks = []; // งานทั้งหมด (จาก API)
+        let filteredTasks = []; // งานที่ผ่านการฟิลเตอร์
+        let viewMode = 'grid'; // โหมดแสดงผล
+        let users_list = []; // รายชื่อผู้ใช้
+        let file_count_size = []; // ขนาดไฟล์แนบ
+        let allTasksBackup = null; // สำรองข้อมูลงานก่อนใช้ฟิลเตอร์ (เพื่อให้สามารถคืนค่าได้)
 
         // =============================
         // โหลดรายชื่อผู้ใช้จาก API
@@ -376,7 +376,7 @@ include 'check_session.php';
 
         // ช่วยตั้งค่า active class ในเมนูกรอง
         function setFilterActive(filterKey) {
-            ['all','today','week','month'].forEach(key => {
+            ['all', 'today', 'week', 'month'].forEach(key => {
                 const el = document.getElementById('filter_' + key);
                 if (!el) return;
                 if (key === filterKey) {
@@ -642,7 +642,7 @@ include 'check_session.php';
 
             for (let i = startPage; i <= endPage; i++) {
                 pagesHtml += `
-                    <button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">
+                    <button class="btn btn-outline-primary page-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">
                         ${i}
                     </button>
                 `;
@@ -812,9 +812,18 @@ include 'check_session.php';
         }
 
         // Form Reset
-        function resetForm() {
+        function resetForm() { // รีเซ็ตฟอร์มทั้งหมด
             document.getElementById('task_newtopicForm').reset();
-            document.getElementById('task_newtopicForm').classList.remove('was-validated');
+            const form = document.getElementById('task_newtopicForm');
+            form.classList.remove('was-validated');
+
+            // ลบ class validation (กรอบแดง/กรอบเขียว) ทั้งหมด เมื่อรีเซ็ตฟอร์ม
+            form.querySelectorAll('input, textarea, select').forEach(el => {
+                el.classList.remove('is-invalid');
+                el.classList.remove('is-valid');
+            });
+            // รีเซ็ตตัวแปรและ UI ที่เกี่ยวข้อง
+            filesToDelete = [];
             selectedUsers = [];
             mentionUsers = [];
             file_count_size = [];
@@ -1346,8 +1355,9 @@ include 'check_session.php';
                 //console.log('!validateForm');
                 return;
             }
-            let totalSize = file_count_size.reduce((sum, item) => sum + item.size, 0);
-            if (totalSize > 7) {
+            let totalSize = file_count_size.reduce((sum, item) => sum + item.size, 0); // รวมขนาดไฟล์
+            let totalMB = (totalSize / (1024 * 1024)).toFixed(2); // แปลงเป็น MB
+            if (totalMB > 7) { // ถ้าเกิน 7MB
                 showAlert(`ขนาดไฟล์รวมทั้งหมด มีขนาดใหญ่เกินไป (สูงสุด 7MB)`, 'danger');
                 return;
             }
