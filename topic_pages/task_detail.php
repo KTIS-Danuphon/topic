@@ -365,7 +365,7 @@ include 'check_session.php';
                         <!-- ไฟล์แนบ -->
                         <div class="mb-3">
                             <label class="form-label">
-                                <i class="bi bi-paperclip me-1"></i>ไฟล์แนบ
+                                <i class="bi bi-paperclip me-1"></i>ไฟล์แนบ 
                             </label>
                             <div class="file-attachments" id="fileAttachments_old"></div>
 
@@ -377,8 +377,9 @@ include 'check_session.php';
                                     </div>
                                 </div>
                             </div>
-                            <button type="button" class="btn btn-outline-secondary btn-sm mt-2" onclick="addFileInput()">
-                                <i class="bi bi-plus me-1"></i>เพิ่มไฟล์แนบ
+                            <code>*แต่ละไฟล์ต้องมีขนาดไม่เกิน 2MB และขนาดไฟล์แนบทั้งหมดรวมกันต้องไม่เกิน 7MB</code><br>
+                            <button id="btn_addFiles" type="button" class="btn btn-outline-secondary btn-sm mt-2" onclick="addFileInput()">
+                                <i class="bi bi-plus me-1"></i>เพิ่มไฟล์แนบ 
                             </button>
                         </div>
                     </form>
@@ -472,6 +473,7 @@ include 'check_session.php';
         let users_list = []; //เก็บ id user ไว้โชว์ให้เลือก ผู้ใช้ ที่เกี่ยวข้อง
         // let mockTasks = [];
         let filesToDelete = []; // array เก็บ id ไฟล์ที่ผู้ใช้เลือกจะลบ
+        let file_count_size = []; //เก็บ id และ ขนาดของไฟล์แนบ
     </script>
 
     <script>
@@ -482,8 +484,12 @@ include 'check_session.php';
             showAlert('คุณไม่มีสิทธิ์แก้ไขผู้เกี่ยวข้อง', 'danger');
 
         });
-        // โชว์แจ้งเตือน มุมขวาบน 
-        function showToast(message, type = 'info') {
+    // ======================================================================
+    // UI: โชว์แจ้งเตือนมุมขวาบน (Toast)
+    // คำอธิบาย: แสดงข้อความชั่วคราวมุมขวาบน เพื่อแจ้งผลการทำงาน เช่น success, info, warning, danger
+    // การเรียกใช้งาน: showToast('ข้อความ', 'success')
+    // ======================================================================
+    function showToast(message, type = 'info') {
             const toast = document.getElementById('toast');
             toast.className = `toast-notification toast-${type} show`;
             toast.innerHTML = `
@@ -496,8 +502,16 @@ include 'check_session.php';
             }, 3000);
         }
 
-        // ปุ่มแก้ไข 
-        async function handleEdit(id) {
+    // ======================================================================
+    // Modal แก้ไขงาน (handleEdit)
+    // คำอธิบาย: ฟังก์ชันนี้เปิด modal แก้ไขงานและโหลดข้อมูล task จาก API
+    // ขั้นตอนหลัก:
+    //  - แสดง modal และ loading placeholder
+    //  - ดึงข้อมูล task, ไฟล์, ผู้เกี่ยวข้อง จาก API
+    //  - เติมค่าลงในฟอร์ม เพื่อให้ผู้ใช้แก้ไข
+    // หมายเหตุ: ฟังก์ชันนี้ไม่ส่งการแก้ไขขึ้นเซิร์ฟเวอร์ — แค่เตรียม UI ให้แก้ไข
+    // ======================================================================
+    async function handleEdit(id) {
             // เปิด modal
             const editModal = new bootstrap.Modal(document.getElementById('task_updatetopicModal'));
             editModal.show();
@@ -685,7 +699,12 @@ include 'check_session.php';
             // console.log('Edit task');
         }
 
-        function toggleFileDelete(fileId, btn) {
+    // ======================================================================
+    // จัดการไฟล์เก่า (ลบ/ยกเลิกลบ)
+    // คำอธิบาย: สลับสถานะ 'รอลบ' ให้กับไฟล์ที่มีอยู่แล้ว และเก็บ id ลงใน filesToDelete
+    // การใช้งาน: ปุ่มลบไฟล์ในรายการไฟล์เก่า จะเรียกฟังก์ชันนี้
+    // ======================================================================
+    function toggleFileDelete(fileId, btn) {
             const parent = btn.closest(".file-old");
             const statusLabel = parent.querySelector(".status-label");
 
@@ -721,7 +740,11 @@ include 'check_session.php';
 
     <!-- สคริปฟิลเตอร์ -->
     <script>
-        async function api_loadUsers() { //โหลดรายชื่อผู้ใช้
+    // ======================================================================
+    // โหลดรายชื่อผู้ใช้จาก API
+    // คำอธิบาย: ฟังก์ชันนี้ดึงรายการผู้ใช้ เพื่อใช้ใน dropdown, ระบบ mention และการเลือกผู้เกี่ยวข้อง
+    // ======================================================================
+    async function api_loadUsers() { //โหลดรายชื่อผู้ใช้
             try {
                 const response = await fetch(`../topic_api/get_user.php`);
 
@@ -744,7 +767,12 @@ include 'check_session.php';
             }
         }
 
-        async function api_loadTasks(taskId) {
+    // ======================================================================
+    // โหลดข้อมูลงานและแสดงผลบนหน้า (api_loadTasks)
+    // คำอธิบาย: ดึงรายละเอียดงาน (task) และไฟล์ที่แนบมา แล้วสร้าง HTML แสดงผลใน `#tasksContainer`
+    // หมายเหตุ: ถ้าเป็น error จะแสดงข้อความว่าไม่พบงาน
+    // ======================================================================
+    async function api_loadTasks(taskId) {
             try {
                 const response = await fetch(`../topic_api/get_task_detail.php?task_id=${taskId}`);
 
@@ -822,7 +850,7 @@ include 'check_session.php';
                                         <i class="bi bi-code-slash me-1"></i>${task.category}
                                     </span>
                                     <span class="task-id">
-                                        <i class="bi bi-hash me-1"></i>TASK-2025-001
+                                        <i class="bi bi-hash me-1"></i>${`TASK-${new Date(task.created_at).getFullYear()}-${String(task.id).padStart(3,'0')}`}
                                     </span>
                                     <span class="created-date">
                                         <i class="bi bi-calendar3 me-1"></i>${formatDate(task.created_at)}
@@ -1107,6 +1135,7 @@ include 'check_session.php';
             document.getElementById('task_updatetopicForm').classList.remove('was-validated');
             selectedUsers = [];
             mentionUsers = [];
+            file_count_size = [];
             fileInputCounter = 1;
             updateUserTagsDisplay();
             resetFileAttachments();
@@ -1189,7 +1218,12 @@ include 'check_session.php';
         }
 
         // Mention System
-        function setupMentionSystem() {
+    // ======================================================================
+    // ระบบ mention (@) ใน textarea
+    // คำอธิบาย: ตรวจการพิมพ์ @ เพื่อแสดง dropdown ของผู้ใช้ที่ตรงกับคำค้น
+    // ฟังก์ชันหลัก: handleMentionInput, handleMentionKeydown, showMentionDropdown, selectMentionUser
+    // ======================================================================
+    function setupMentionSystem() {
             const textarea = document.getElementById('update_taskDescription');
             const dropdown = document.getElementById('mentionDropdown');
 
@@ -1369,16 +1403,48 @@ include 'check_session.php';
             selectedMentionIndex = -1;
         }
 
-        // File Management
-        function setupFileInput(inputId) {
+    // ======================================================================
+    // การจัดการไฟล์แนบ (File inputs)
+    // คำอธิบาย: ผูก event ให้กับ input type=file แต่ละตัว ตรวจขนาดไฟล์ต่อไฟล์และขนาดรวม
+    // - จำกัดไฟล์ต่อไฟล์ ไม่เกิน 2MB
+    // - จำกัดขนาดรวม ไม่เกิน 7MB (ปิดปุ่มเพิ่มไฟล์เมื่อเกิน)
+    // ฟังก์ชันที่เกี่ยวข้อง: setupFileInput, displaySelectedFile, removeFileInput, resetFileAttachments
+    // ======================================================================
+    // File Management
+    function setupFileInput(inputId) {
             const input = document.getElementById(inputId);
             if (!input) return;
+
+            console.log('setupFileInput -> input:', input);
+
+            // 🔎 เช็คว่าตอนนี้ input มีไฟล์อยู่ไหม
+            if (input.files && input.files.length > 0) {
+                console.log(`📂 input[${inputId}] มีไฟล์อยู่แล้ว:`, input.files[0].name, input.files[0].size, "bytes");
+            } else {
+                file_count_size = file_count_size.filter(item => item.id !== inputId);
+                console.log('ขนาดไฟล์รวม', file_count_size);
+
+                console.log(`📂 input[${inputId}] ไม่มีไฟล์`);
+            }
 
             input.addEventListener('change', function() {
                 if (this.files.length > 0) {
                     displaySelectedFile(this);
+                } else {
+                    console.log(`❌ input[${inputId}] ถูกล้าง ไม่มีไฟล์`);
                 }
             });
+
+            // รวมขนาดทั้งหมด
+            let totalSize = file_count_size.reduce((sum, item) => sum + item.size, 0);
+            let totalMB = (totalSize / (1024 * 1024)).toFixed(2);
+            console.log('totalMB', totalMB);
+
+            if (totalMB >= 7) {
+                document.getElementById('btn_addFiles').disabled = true;
+            } else {
+                document.getElementById('btn_addFiles').disabled = false;
+            }
         }
 
         function triggerFileInput(inputId) {
@@ -1405,8 +1471,13 @@ include 'check_session.php';
             setupFileInput(inputId);
         }
 
-        // Enhanced file input validation
-        function displaySelectedFile(input) {
+    // ======================================================================
+    // แสดงไฟล์ที่เลือกและตรวจสอบขนาด
+    // คำอธิบาย: เมื่อผู้ใช้เลือกไฟล์ ฟังก์ชันนี้จะตรวจขนาดไฟล์ (สูงสุด 2MB ต่อไฟล์)
+    // และอัปเดตตัวแปร file_count_size เพื่อคำนวณขนาดรวม (จำกัดรวม 7MB)
+    // ======================================================================
+    // Enhanced file input validation
+    function displaySelectedFile(input) {
             if (!input.files || input.files.length === 0) {
                 console.warn('No file selected for input:', input.id);
                 return;
@@ -1416,10 +1487,22 @@ include 'check_session.php';
             const container = input.parentElement;
 
             // Validate file
-            if (file.size > 4 * 1024 * 1024) {
-                showAlert(`ไฟล์ "${file.name}" มีขนาดใหญ่เกินไป (สูงสุด 4MB)`, 'danger');
+            if (file.size > 2 * 1024 * 1024) {
+                showAlert(`ไฟล์ "${file.name}" มีขนาดใหญ่เกินไป (สูงสุด 2MB)`, 'danger');
                 input.value = ''; // Clear the input
                 return;
+            } else {
+                console.log('ก่อนinputId', input);
+                // ลบข้อมูลเก่าออกก่อน (กันซ้ำ)
+                file_count_size = file_count_size.filter(item => item.id !== input);
+
+                // เพิ่มข้อมูลใหม่
+                file_count_size.push({
+                    id: input.id,
+                    size: file.size
+                });
+                //file_count_size = file_count_size + file.size; //เก็บขนาดไฟล์
+                console.log('ขนาดไฟล์รวม', file_count_size);
             }
 
             console.log(`📎 File selected: ${file.name} (${formatFileSize(file.size)})`);
@@ -1447,6 +1530,17 @@ include 'check_session.php';
             const dt = new DataTransfer();
             dt.items.add(input.files[0]);
             fileInput_new.files = dt.files;
+
+            // รวมขนาดทั้งหมด
+            let totalSize = file_count_size.reduce((sum, item) => sum + item.size, 0);
+            let totalMB = (totalSize / (1024 * 1024)).toFixed(2);
+            console.log('totalMB', totalMB);
+
+            if (totalMB >= 7) {
+                document.getElementById('btn_addFiles').disabled = true;
+            } else {
+                document.getElementById('btn_addFiles').disabled = false;
+            }
         }
 
         function getFileIcon(mimeType) {
@@ -1519,8 +1613,12 @@ include 'check_session.php';
             console.log('🔄 File attachments reset');
         }
 
-        // File validation helper
-        function validateAllFiles() {
+    // ======================================================================
+    // ตัวช่วยตรวจสอบไฟล์ทั้งหมด (validateAllFiles)
+    // คำอธิบาย: ตรวจสอบ input แต่ละตัว และรวบรวมไฟล์ที่พร้อมส่งไปยัง API
+    // ======================================================================
+    // File validation helper
+    function validateAllFiles() {
             const fileInputs = document.querySelectorAll('.file-input-hidden');
             const validFiles = [];
 
@@ -1553,26 +1651,13 @@ include 'check_session.php';
             return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
 
-        // Form Validation & Save
-        function validateForm() {
-            // const form = document.getElementById('task_updatetopicForm');
-            // const title = document.getElementById('update_taskTitle');
-
-            // let isValid = true;
-
-            // // Reset validation
-            // form.classList.remove('was-validated');
-
-            // // Check title
-            // if (!title.value.trim()) {
-            //     title.classList.add('is-invalid');
-            //     isValid = false;
-            // } else {
-            //     title.classList.remove('is-invalid');
-            // }
-
-            // form.classList.add('was-validated');
-            // return isValid;
+    // ======================================================================
+    // ตรวจสอบฟอร์ม (validateForm)
+    // คำอธิบาย: ตรวจ required fields ในฟอร์ม และแสดงสถานะ validation ด้วย Bootstrap classes
+    // คืนค่า: true ถ้าฟอร์มผ่าน, false ถ้าไม่ผ่าน
+    // ======================================================================
+    // Form Validation & Save
+    function validateForm() {
             const form = document.getElementById('task_updatetopicForm');
             let isValid = true;
 
@@ -1618,25 +1703,20 @@ include 'check_session.php';
             }
         }
 
-        function updateTask() {
-            // if (!validateForm()) {
-            //     console.log('!validateForm');
-            //     return;
-            // }
-
-
-            // const btn = document.getElementById("saveBtn");
-            // // ปิดการกดซ้ำ
-            // btn.disabled = true;
-            // // เปลี่ยนข้อความ
-            // btn.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> กำลังบันทึก...`;
-            // // จำลองการบันทึก (เช่น เรียก API)
-            // setTimeout(() => {
-            //     // ตัวอย่าง: บันทึกเสร็จแล้ว
-            //     btn.innerHTML = `<i class="bi bi-check-circle me-1"></i>บันทึก`;
-            //     // ถ้าต้องการกดใหม่ภายหลัง ให้เปิดใช้งานอีกครั้ง:
-            //     // btn.disabled = false;
-            // }, 3000);
+    // ======================================================================
+    // เตรียมข้อมูลและบันทึกงาน (updateTask)
+    // คำอธิบาย: ตรวจขนาดไฟล์รวมก่อน แล้วรวบรวมข้อมูลจากฟอร์มเป็น object เพื่อนำไปส่ง
+    // ======================================================================
+    function updateTask() {
+            if (!validateForm()) {
+                console.log('!validateForm');
+                return;
+            }
+            let totalSize = file_count_size.reduce((sum, item) => sum + item.size, 0);
+            if (totalSize > 7) {
+                showAlert(`ขนาดไฟล์รวมทั้งหมด มีขนาดใหญ่เกินไป (สูงสุด 7MB)`, 'danger');
+                return;
+            }
 
             const formData = {
                 id: document.getElementById('update_taskID').value.trim(),
@@ -1690,8 +1770,12 @@ include 'check_session.php';
             // }, 1500);
         }
 
-        // API Integration Functions
-        function updateTaskToAPI(formData) {
+    // ======================================================================
+    // ส่งข้อมูลการอัปเดตไปยัง API (updateTaskToAPI)
+    // คำอธิบาย: สร้าง FormData, แนบไฟล์ และเรียก endpoint เพื่อบันทึกการแก้ไข
+    // ======================================================================
+    // API Integration Functions
+    function updateTaskToAPI(formData) {
             document.getElementById('tasksContainer').innerHTML = "";
 
             showAlert('บันทึกการแก้ไข', 'success');
@@ -1783,8 +1867,13 @@ include 'check_session.php';
                 });
         }
 
-        // Utility Functions
-        function showAlert(message, type = 'info') {
+    // ======================================================================
+    // แสดง Alert แบบ Bootstrap (showAlert)
+    // คำอธิบาย: สร้าง alert ด้านบนมุมขวา ใช้แสดงข้อความสำคัญที่ต้องให้ผู้ใช้เห็น
+    // การใช้งาน: showAlert('ข้อความ', 'success')
+    // ======================================================================
+    // Utility Functions
+    function showAlert(message, type = 'info') {
             // Create alert container if it doesn't exist
             let alertContainer = document.getElementById('alertContainer');
             if (!alertContainer) {

@@ -12,7 +12,7 @@ include 'check_session.php';
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css" rel="stylesheet">
-    <!-- <?php include 'style.php'; ?> -->
+    <?php include 'style.php'; ?>
 </head>
 
 <body>
@@ -44,10 +44,10 @@ include 'check_session.php';
                                         <i class="bi bi-funnel me-1"></i> กรองข้อมูล
                                     </button>
                                     <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item" href="#" onclick="filterTasks('all')">ทั้งหมด</a></li>
-                                        <li><a class="dropdown-item" href="#" onclick="filterTasks('today')">วันนี้</a></li>
-                                        <li><a class="dropdown-item" href="#" onclick="filterTasks('week')">สัปดาห์นี้</a></li>
-                                        <li><a class="dropdown-item" href="#" onclick="filterTasks('month')">เดือนนี้</a></li>
+                                        <li><a id="filter_all" class="dropdown-item" href="#" onclick="onFilterClick('all')">ทั้งหมด</a></li>
+                                        <li><a id="filter_today" class="dropdown-item" href="#" onclick="onFilterClick('today')">วันนี้</a></li>
+                                        <li><a id="filter_week" class="dropdown-item" href="#" onclick="onFilterClick('week')">สัปดาห์นี้</a></li>
+                                        <li><a id="filter_month" class="dropdown-item" href="#" onclick="onFilterClick('month')">เดือนนี้</a></li>
                                     </ul>
                                 </div>
                                 <div class="dropdown">
@@ -239,7 +239,7 @@ include 'check_session.php';
                         <!-- ไฟล์แนบ -->
                         <div class="mb-3">
                             <label class="form-label">
-                                <i class="bi bi-paperclip me-1"></i>ไฟล์แนบ
+                                <i class="bi bi-paperclip me-1"></i>ไฟล์แนบ <code>*แต่ละไฟล์ต้องมีขนาดไม่เกิน 2MB และขนาดไฟล์แนบทั้งหมดรวมกันต้องไม่เกิน 7MB</code>
                             </label>
                             <div class="file-attachments" id="fileAttachments">
                                 <div class="file-input-container" data-file-index="1">
@@ -249,7 +249,7 @@ include 'check_session.php';
                                     </div>
                                 </div>
                             </div>
-                            <button type="button" class="btn btn-outline-secondary btn-sm mt-2" onclick="addFileInput()">
+                            <button id="btn_addFiles" type="button" class="btn btn-outline-secondary btn-sm mt-2" onclick="addFileInput()">
                                 <i class="bi bi-plus me-1"></i>เพิ่มไฟล์แนบ
                             </button>
                         </div>
@@ -306,365 +306,232 @@ include 'check_session.php';
 
     <!-- สคริปฟิลเตอร์ -->
     <script>
-        // Global variables
-        let currentPage = 1;
-        let itemsPerPage = 10;
-        let totalItems = 0;
-        let totalPages = 0;
-        let currentFilter = 'all';
-        let currentSort = 'date_desc';
-        let currentSearch = '';
-        let isLoading = false;
-        let allTasks = [];
-        let filteredTasks = [];
-        let viewMode = 'grid';
-        let users_list = [];
-        // Mock data - Complete 15 tasks
-        // let mockTasks = [{
-        //         id: 1,
-        //         title: "พัฒนาระบบจัดการงานใหม่สำหรับบริษัท",
-        //         category: "development",
-        //         status: "pending",
-        //         created_at: "2023-01-15 14:30",
-        //         priority: 3
-        //     },
-        //     {
-        //         id: 2,
-        //         title: "ออกแบบ Landing Page สำหรับผลิตภัณฑ์ใหม่",
-        //         category: "design",
-        //         status: "in-progress",
-        //         created_at: "2023-01-14 10:15",
-        //         priority: 2
-        //     },
-        //     {
-        //         id: 3,
-        //         title: "วิเคราะห์ข้อมูลการขายไตรมาส 4",
-        //         category: "marketing",
-        //         status: "completed",
-        //         created_at: "2024-01-13 16:45",
-        //         priority: 1
-        //     },
-        //     {
-        //         id: 4,
-        //         title: "ประชุมทีมพัฒนาประจำสัปดาห์",
-        //         category: "meeting",
-        //         status: "pending",
-        //         created_at: "2024-01-12 09:00",
-        //         priority: 2
-        //     },
-        //     {
-        //         id: 5,
-        //         title: "อัพเดท API Documentation",
-        //         category: "development",
-        //         status: "in-progress",
-        //         created_at: "2025-01-11 11:20",
-        //         priority: 2
-        //     },
-        //     {
-        //         id: 6,
-        //         title: "สร้างแคมเปญโฆษณา Social Media",
-        //         category: "marketing",
-        //         status: "pending",
-        //         created_at: "2025-01-10 13:15",
-        //         priority: 3
-        //     },
-        //     {
-        //         id: 7,
-        //         title: "ปรับปรุง UI/UX หน้า Dashboard",
-        //         category: "design",
-        //         status: "completed",
-        //         created_at: "2025-01-09 15:30",
-        //         priority: 1
-        //     },
-        //     {
-        //         id: 8,
-        //         title: "ทดสอบระบบ Security",
-        //         category: "development",
-        //         status: "in-progress",
-        //         created_at: "2025-01-08 08:45",
-        //         priority: 3
-        //     },
-        //     {
-        //         id: 9,
-        //         title: "จัดทำรายงานผลประกอบการรายเดือน",
-        //         category: "other",
-        //         status: "pending",
-        //         created_at: "2025-01-07 12:00",
-        //         priority: 2
-        //     },
-        //     {
-        //         id: 10,
-        //         title: "Workshop เรื่องการใช้งาน CRM",
-        //         category: "meeting",
-        //         status: "completed",
-        //         created_at: "2025-01-06 14:00",
-        //         priority: 1
-        //     },
-        //     {
-        //         id: 11,
-        //         title: "พัฒนา Mobile App สำหรับลูกค้า",
-        //         category: "development",
-        //         status: "pending",
-        //         created_at: "2025-01-05 10:30",
-        //         property: 3
-        //     },
-        //     {
-        //         id: 12,
-        //         title: "ออกแบบโบรชัวร์ผลิตภัณฑ์",
-        //         category: "design",
-        //         status: "in-progress",
-        //         created_at: "2025-09-30 11:15",
-        //         priority: 2
-        //     },
-        //     {
-        //         id: 13,
-        //         title: "วิเคราะห์คู่แข่งในตลาด",
-        //         category: "marketing",
-        //         status: "pending",
-        //         created_at: "2025-09-01 09:45",
-        //         priority: 2
-        //     },
-        //     {
-        //         id: 14,
-        //         title: "ติดตั้งระบบ Backup ใหม่",
-        //         category: "development",
-        //         status: "pending",
-        //         created_at: "2025-09-15 16:20",
-        //         priority: 1
-        //     },
-        //     {
-        //         id: 15,
-        //         title: "ประเมินประสิทธิภาพทีมงาน",
-        //         category: "other",
-        //         status: "in-progress",
-        //         created_at: "2025-09-16 01:00",
-        //         priority: 2
-        //     }
-        // ];
-        // let users = [{
-        //         id: 1,
-        //         name: 'สมชาย จันทร์เพ็ญ',
-        //         username: 'somchai'
-        //     },
-        //     {
-        //         id: 2,
-        //         name: 'สุดา ใจดี',
-        //         username: 'suda'
-        //     },
-        //     {
-        //         id: 3,
-        //         name: 'วิชัย สมบูรณ์',
-        //         username: 'wichai'
-        //     },
-        //     {
-        //         id: 4,
-        //         name: 'นิรันดร์ วงศ์ดี',
-        //         username: 'niran'
-        //     },
-        //     {
-        //         id: 5,
-        //         name: 'อรทัย บุญมี',
-        //         username: 'orathai'
-        //     },
-        //     {
-        //         id: 6,
-        //         name: 'ธนา กิจดี',
-        //         username: 'thana'
-        //     },
-        //     {
-        //         id: 7,
-        //         name: 'รัชนี สุขใส',
-        //         username: 'rachani'
-        //     },
-        //     {
-        //         id: 8,
-        //         name: 'ประวิทย์ เก่งกาจ',
-        //         username: 'prawit'
-        //     }
-        // ];
+    // =============================
+    // ตัวแปรหลักสำหรับการจัดการงาน
+    // =============================
+    let currentPage = 1; // หน้าปัจจุบัน
+    let itemsPerPage = 10; // จำนวนงานต่อหน้า
+    let totalItems = 0; // งานทั้งหมด
+    let totalPages = 0; // จำนวนหน้าทั้งหมด
+    let currentFilter = 'all'; // ฟิลเตอร์สถานะ
+    let currentSort = 'date_desc'; // การเรียงลำดับ
+    let currentSearch = '';
+    let isLoading = false;
+    let allTasks = []; // งานทั้งหมด (จาก API)
+    let filteredTasks = []; // งานที่ผ่านการฟิลเตอร์
+    let viewMode = 'grid'; // โหมดแสดงผล
+    let users_list = []; // รายชื่อผู้ใช้
+    let file_count_size = []; // ขนาดไฟล์แนบ
+    let allTasksBackup = null; // สำรองข้อมูลงานก่อนใช้ฟิลเตอร์ (เพื่อให้สามารถคืนค่าได้)
+
+        // =============================
+        // โหลดรายชื่อผู้ใช้จาก API
+        // =============================
         async function api_loadUsers() {
             try {
                 const response = await fetch(`../topic_api/get_user.php`);
-
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-
                 const data = await response.json();
-
                 if (Array.isArray(data.users)) {
-                    users_list = [...data.users]; // assign ใหม่เลย
+                    users_list = [...data.users]; // กำหนด users_list ใหม่
                 } else {
                     console.warn("API response ไม่มี users array", data);
                 }
-
-                console.log('users', users_list);
-
             } catch (error) {
-                console.error('Error loading users:', error);
+                console.error('เกิดข้อผิดพลาดในการโหลดผู้ใช้:', error);
             }
         }
+        // =============================
+        // โหลดข้อมูลงานจาก API
+        // =============================
         let mockTasks = [];
         async function api_loadTasks() {
             try {
                 const response = await fetch('../topic_api/get_task.php');
-
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-
                 const data = await response.json();
-
-                // แสดงผลใน console
-                console.log(data);
-                mockTasks.length = 0; // ล้าง array
-                mockTasks.push(...data.tasks); // ใส่ค่าใหม่
+                // mockTasks จะเก็บข้อมูลงานทั้งหมด
                 mockTasks = [...data.tasks];
-                console.log(data);
-
                 allTasks = [...mockTasks];
-                console.log(data);
-
-                applyFiltersAndSort();
+                applyFiltersAndSort(); // ฟิลเตอร์และเรียงลำดับทันทีหลังโหลด
                 updateSidebarCounts();
                 return data;
-
             } catch (error) {
-                console.error('Error loading tasks:', error);
+                console.error('เกิดข้อผิดพลาดในการโหลดงาน:', error);
             }
         }
+        // =============================
+        // โหลดข้อมูลเมื่อหน้าเว็บพร้อมใช้งาน
+        // =============================
         document.addEventListener("DOMContentLoaded", function() {
             api_loadUsers();
             api_loadTasks();
-
-        });
-        // Initialize the application
-        document.addEventListener('DOMContentLoaded', function() {
-            // allTasks = [...mockTasks];
-            // applyFiltersAndSort();
-            // updateSidebarCounts();
+            // ตั้งค่าเมนูกรองให้ active ที่ 'ทั้งหมด' ตั้งต้น
+            setFilterActive('all');
         });
 
-        // Toggle sidebar for mobile
+        // ช่วยตั้งค่า active class ในเมนูกรอง
+        function setFilterActive(filterKey) {
+            ['all','today','week','month'].forEach(key => {
+                const el = document.getElementById('filter_' + key);
+                if (!el) return;
+                if (key === filterKey) {
+                    el.classList.add('active');
+                } else {
+                    el.classList.remove('active');
+                }
+            });
+        }
+
+        // เมื่อคลิกเลือกฟิลเตอร์ในเมนู ให้ตั้ง active และเรียก filterTasks
+        function onFilterClick(filterKey) {
+            setFilterActive(filterKey);
+            filterTasks(filterKey);
+        }
+
+        // =============================
+        // ฟังก์ชันสลับ sidebar (มือถือ/เดสก์ท็อป)
+        // =============================
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const mainContent = document.getElementById('mainContent');
-
             sidebar.classList.toggle('show');
             sidebar.classList.toggle('collapsed');
             mainContent.classList.toggle('sidebar-collapsed');
         }
 
-        // Load tasks by status
+        // =============================
+        // ฟิลเตอร์งานตามสถานะ (ทั้งหมด/รอดำเนินการ/กำลังดำเนินการ/เสร็จสิ้น)
+        // =============================
         function loadTasks(status) {
             currentFilter = status;
             currentPage = 1;
-
-            // Update active nav link
+            // ลบ active เดิมในเมนู
             document.querySelectorAll('.nav-link-custom').forEach(link => {
                 link.classList.remove('active');
             });
-
-            // Update page title
+            // เปลี่ยนชื่อหัวข้อหน้าตามสถานะ
             const titles = {
                 'all': 'งานทั้งหมด',
                 'pending': 'งานรอดำเนินการ',
                 'in-progress': 'งานกำลังดำเนินการ',
                 'completed': 'งานเสร็จสิ้น'
             };
-
             document.getElementById('pageTitle').textContent = titles[status] || 'งานทั้งหมด';
-
             applyFiltersAndSort();
         }
 
-        // Filter tasks by date range
+        // =============================
+        // ฟิลเตอร์งานตามช่วงวันที่ (วันนี้/สัปดาห์นี้/เดือนนี้)
+        // =============================
         function filterTasks(dateFilter) {
-            console.log(dateFilter);
+            // ถ้าผู้ใช้เลือก 'all' ให้คืนค่ากลับไปยังข้อมูลต้นฉบับ (ถ้ามีสำรอง)
+            if (dateFilter === 'all') {
+                if (allTasksBackup) {
+                    allTasks = [...allTasksBackup];
+                    allTasksBackup = null; // ล้างสำรองเมื่อคืนค่าแล้ว
+                }
+                currentPage = 1;
+                applyFiltersAndSort();
+                return;
+            }
+
+            // สำรองข้อมูลต้นฉบับก่อนกรองครั้งแรก (ถ้ายังไม่มีสำรอง)
+            if (!allTasksBackup) {
+                allTasksBackup = [...allTasks];
+            }
 
             const now = new Date();
             const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-            let filteredByDate = allTasks;
+            // ใช้ข้อมูลจากสำรองเป็นฐานในการกรอง เพื่อหลีกเลี่ยงการซ้อนกรองบนข้อมูลที่ถูกกรองแล้ว
+            let sourceTasks = allTasksBackup ? [...allTasksBackup] : [...allTasks];
+            let filteredByDate = sourceTasks;
 
             if (dateFilter === 'today') {
-                filteredByDate = allTasks.filter(task => {
+                filteredByDate = sourceTasks.filter(task => {
                     const taskDate = new Date(task.created_at);
                     const taskDay = new Date(taskDate.getFullYear(), taskDate.getMonth(), taskDate.getDate());
-                    console.log(taskDay);
                     return taskDay.getTime() === today.getTime();
                 });
             } else if (dateFilter === 'week') {
-                const weekAgo = new Date(today.getTime() - (7 * 24 * 60 * 60 * 1000));
-                filteredByDate = allTasks.filter(task => {
-                    const taskDate = new Date(task.created_at);
-                    console.log(taskDate + '>=' + weekAgo);
+                // นับเป็น "สัปดาห์นี้" โดยให้สัปดาห์เริ่มวันอาทิตย์ และสิ้นสุดวันเสาร์
+                // (ตัวอย่าง: ถ้าวันนี้เป็นวันพุธ จะนับตั้งแต่วันอาทิตย์ของสัปดาห์นั้น ถึงวันเสาร์)
+                // หาวันเริ่มต้นของสัปดาห์ (Sunday)
+                const dayOfWeek = today.getDay(); // Sunday=0, Monday=1, ... Saturday=6
+                const weekStart = new Date(today);
+                weekStart.setDate(today.getDate() - dayOfWeek); // ย้อนกลับไปยังวันอาทิตย์
+                weekStart.setHours(0, 0, 0, 0);
 
-                    return taskDate >= weekAgo;
+                // วันสิ้นสุดของสัปดาห์ คือวันเสาร์ เวลา 23:59:59.999
+                const weekEnd = new Date(weekStart);
+                weekEnd.setDate(weekStart.getDate() + 6);
+                weekEnd.setHours(23, 59, 59, 999);
+
+                filteredByDate = sourceTasks.filter(task => {
+                    const taskDate = new Date(task.created_at);
+                    return taskDate >= weekStart && taskDate <= weekEnd;
                 });
             } else if (dateFilter === 'month') {
-                const monthAgo = new Date(today.getTime() - (30 * 24 * 60 * 60 * 1000));
-                filteredByDate = allTasks.filter(task => {
-                    const taskDate = new Date(task.created_at);
-                    console.log(taskDate + '>=' + monthAgo);
+                // นับเป็น "เดือนนี้" ตามเดือนปฏิทิน (วันแรกของเดือน ถึง วันสุดท้ายของเดือน)
+                // ป้องกันการแสดงผลจากเดือนอื่น ๆ
+                const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+                const month = today.getMonth();
+                const year = today.getFullYear();
 
-                    return taskDate >= monthAgo;
+                filteredByDate = sourceTasks.filter(task => {
+                    const taskDate = new Date(task.created_at);
+                    return taskDate.getFullYear() === year && taskDate.getMonth() === month;
                 });
             }
 
+            // กำหนดผลลัพธ์การกรองเป็น allTasks (UI จะอ่านจาก allTasks)
             allTasks = filteredByDate;
             currentPage = 1;
             applyFiltersAndSort();
         }
 
-        // Sort tasks
+        // =============================
+        // ฟังก์ชันเรียงลำดับงาน (วันที่/ชื่อ/ความสำคัญ)
+        // =============================
         function sortTasks(sortType) {
             currentSort = sortType;
             applyFiltersAndSort();
         }
 
-        // Search tasks
+        // =============================
+        // ฟังก์ชันค้นหางาน
+        // =============================
         function searchTasks(query) {
-            console.log(query);
             currentSearch = query.toLowerCase();
-            console.log('currentSearch', currentSearch);
             currentPage = 1;
             applyFiltersAndSort();
         }
 
-        // Apply all filters and sorting
+        // =============================
+        // ฟังก์ชันรวม: ฟิลเตอร์ + เรียงลำดับ + อัปเดตหน้าจอ
+        // =============================
         function applyFiltersAndSort() {
             showLoading();
-
             setTimeout(() => {
-                // Start with all tasks
+                // 1. เริ่มจากงานทั้งหมด
                 let tasks = [...allTasks];
-
-                // Apply status filter
+                // 2. ฟิลเตอร์ตามสถานะ
                 if (currentFilter !== 'all') {
                     tasks = tasks.filter(task => task.status === currentFilter);
                 }
-
-                // Apply search filter
-                // if (currentSearch) {
-                //     tasks = tasks.filter(task =>
-                //         task.title.toLowerCase().includes(currentSearch)
-                //     );
-                // }
+                // 3. ฟิลเตอร์ตามคำค้นหา
                 if (currentSearch) {
                     const searchLower = currentSearch.toLowerCase();
-
                     tasks = tasks.filter(task => {
                         const title = task.title.toLowerCase();
-
-                        // ปีจาก created_at
                         const year = new Date(task.created_at).getFullYear().toString();
-
-                        // task code
-                        const taskCode = '1TASK-' + year + '-' + task.id.toString().padStart(4, '0');
-
+                        const taskCode = 'TASK-' + year + '-' + task.id.toString().padStart(4, '0');
                         const status = getStatusName(task.status.toLowerCase());
-
                         return (
                             title.includes(searchLower) ||
                             year.includes(searchLower) ||
@@ -673,33 +540,25 @@ include 'check_session.php';
                         );
                     });
                 }
-
-
-                // Apply sorting
+                // 4. เรียงลำดับ
                 tasks.sort((a, b) => {
                     switch (currentSort) {
                         case 'date_desc':
-                            console.log('date_desc');
                             return new Date(b.created_at) - new Date(a.created_at);
                         case 'date_asc':
-                            console.log('date_asc');
                             return new Date(a.created_at) - new Date(b.created_at);
                         case 'title':
-                            console.log('title');
                             return a.title.localeCompare(b.title, 'th');
                         case 'priority':
-                            console.log('priority');
                             return b.priority - a.priority;
                         default:
-                            console.log('00');
                             return 0;
                     }
                 });
-
+                // 5. อัปเดตตัวแปรและหน้าจอ
                 filteredTasks = tasks;
                 totalItems = filteredTasks.length;
                 totalPages = Math.ceil(totalItems / itemsPerPage);
-
                 renderTasks();
                 renderPagination();
                 updateCounts();
@@ -958,6 +817,7 @@ include 'check_session.php';
             document.getElementById('task_newtopicForm').classList.remove('was-validated');
             selectedUsers = [];
             mentionUsers = [];
+            file_count_size = [];
             fileInputCounter = 1;
             updateUserTagsDisplay();
             resetFileAttachments();
@@ -1018,6 +878,7 @@ include 'check_session.php';
         function updateUserTagsDisplay() {
             const container = document.getElementById('userTagsContainer');
             container.innerHTML = '';
+            //console.log(selectedUsers);
 
             selectedUsers.forEach(user => {
                 const userTag = document.createElement('span');
@@ -1112,11 +973,9 @@ include 'check_session.php';
 
         function showMentionDropdown(query, textarea) {
             const dropdown = document.getElementById('mentionDropdown');
-
             // Filter users based on query
             const filteredUsers = users_list.filter(user =>
-                user.name.toLowerCase().includes(query.toLowerCase()) ||
-                user.username.toLowerCase().includes(query.toLowerCase())
+                user.name.toLowerCase().includes(query.toLowerCase())
             );
 
             if (filteredUsers.length === 0) {
@@ -1212,7 +1071,7 @@ include 'check_session.php';
                 name: u.name
             }));
 
-            console.log("mentionUsers:", mentionUsers);
+            //console.log("mentionUsers:", mentionUsers);
         }
 
         document.getElementById("taskDescription").addEventListener("input", updateMentionUsers);
@@ -1227,12 +1086,38 @@ include 'check_session.php';
             const input = document.getElementById(inputId);
             if (!input) return;
 
+            //console.log('setupFileInput -> input:', input);
+
+            // 🔎 เช็คว่าตอนนี้ input มีไฟล์อยู่ไหม
+            if (input.files && input.files.length > 0) {
+                //console.log(`📂 input[${inputId}] มีไฟล์อยู่แล้ว:`, input.files[0].name, input.files[0].size, "bytes");
+            } else {
+                file_count_size = file_count_size.filter(item => item.id !== inputId);
+                //console.log('ขนาดไฟล์รวม', file_count_size);
+
+                //console.log(`📂 input[${inputId}] ไม่มีไฟล์`);
+            }
+
             input.addEventListener('change', function() {
                 if (this.files.length > 0) {
                     displaySelectedFile(this);
+                } else {
+                    //console.log(`❌ input[${inputId}] ถูกล้าง ไม่มีไฟล์`);
                 }
             });
+
+            // รวมขนาดทั้งหมด
+            let totalSize = file_count_size.reduce((sum, item) => sum + item.size, 0);
+            let totalMB = (totalSize / (1024 * 1024)).toFixed(2);
+            //console.log('totalMB', totalMB);
+
+            if (totalMB >= 7) {
+                document.getElementById('btn_addFiles').disabled = true;
+            } else {
+                document.getElementById('btn_addFiles').disabled = false;
+            }
         }
+
 
         function triggerFileInput(inputId) {
             document.getElementById(inputId).click();
@@ -1269,13 +1154,25 @@ include 'check_session.php';
             const container = input.parentElement;
 
             // Validate file
-            if (file.size > 4 * 1024 * 1024) {
-                showAlert(`ไฟล์ "${file.name}" มีขนาดใหญ่เกินไป (สูงสุด 4MB)`, 'danger');
+            if (file.size > 2 * 1024 * 1024) {
+                showAlert(`ไฟล์ "${file.name}" มีขนาดใหญ่เกินไป (สูงสุด 2MB)`, 'danger');
                 input.value = ''; // Clear the input
                 return;
+            } else {
+                //console.log('ก่อนinputId', input);
+                // ลบข้อมูลเก่าออกก่อน (กันซ้ำ)
+                file_count_size = file_count_size.filter(item => item.id !== input);
+
+                // เพิ่มข้อมูลใหม่
+                file_count_size.push({
+                    id: input.id,
+                    size: file.size
+                });
+                //file_count_size = file_count_size + file.size; //เก็บขนาดไฟล์
+                //console.log('ขนาดไฟล์รวม', file_count_size);
             }
 
-            console.log(`📎 File selected: ${file.name} (${formatFileSize(file.size)})`);
+            //console.log(`📎 File selected: ${file.name} (${formatFileSize(file.size)})`);
 
             container.innerHTML = `
                 <div class="file-item" data-file-attached="true">
@@ -1300,6 +1197,17 @@ include 'check_session.php';
             const dt = new DataTransfer();
             dt.items.add(input.files[0]);
             fileInput_new.files = dt.files;
+
+            // รวมขนาดทั้งหมด
+            let totalSize = file_count_size.reduce((sum, item) => sum + item.size, 0);
+            let totalMB = (totalSize / (1024 * 1024)).toFixed(2);
+            //console.log('totalMB', totalMB);
+
+            if (totalMB >= 7) {
+                document.getElementById('btn_addFiles').disabled = true;
+            } else {
+                document.getElementById('btn_addFiles').disabled = false;
+            }
         }
 
         function getFileIcon(mimeType) {
@@ -1333,13 +1241,13 @@ include 'check_session.php';
             const fileItem = button.closest('.file-item');
 
             if (container && fileItem) {
-                console.log('🗑️ Removing file input');
+                //console.log('🗑️ Removing file input');
 
                 // Find the hidden input and clear it
                 const input = container.querySelector('.file-input-hidden');
                 if (input) {
                     input.value = '';
-                    console.log('✅ File input cleared:', input.id);
+                    //console.log('✅ File input cleared:', input);
                 }
 
                 // Reset to upload state
@@ -1369,7 +1277,7 @@ include 'check_session.php';
             `;
             fileInputCounter = 1;
             setupFileInput('fileInput1');
-            console.log('🔄 File attachments reset');
+            //console.log('🔄 File attachments reset');
         }
 
         // File validation helper
@@ -1409,42 +1317,40 @@ include 'check_session.php';
         // Form Validation & Save
         function validateForm() {
             const form = document.getElementById('task_newtopicForm');
-            const title = document.getElementById('taskTitle');
-
             let isValid = true;
 
-            // Reset validation
+            // รีเซ็ต validation เดิม
             form.classList.remove('was-validated');
 
-            // Check title
-            if (!title.value.trim()) {
-                title.classList.add('is-invalid');
-                isValid = false;
-            } else {
-                title.classList.remove('is-invalid');
-            }
+            // หา element ทุกตัวใน form ที่มี required
+            const requiredFields = form.querySelectorAll('[required]');
 
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    field.classList.add('is-invalid'); // ถ้าไม่มีค่า → invalid
+                    isValid = false;
+                } else {
+                    field.classList.remove('is-invalid'); // ถ้ามีค่า → เอา invalid ออก
+                    field.classList.add('is-valid'); // optional: โชว์ valid (เขียว)
+                }
+            });
+
+            // ใส่ class เพื่อให้ Bootstrap แสดงผล
             form.classList.add('was-validated');
+
             return isValid;
         }
 
         function saveTask() {
             if (!validateForm()) {
-                console.log('!validateForm');
+                //console.log('!validateForm');
                 return;
             }
-            // const btn = document.getElementById("saveBtn");
-            // // ปิดการกดซ้ำ
-            // btn.disabled = true;
-            // // เปลี่ยนข้อความ
-            // btn.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> กำลังบันทึก...`;
-            // // จำลองการบันทึก (เช่น เรียก API)
-            // setTimeout(() => {
-            //     // ตัวอย่าง: บันทึกเสร็จแล้ว
-            //     btn.innerHTML = `<i class="bi bi-check-circle me-1"></i>บันทึก`;
-            //     // ถ้าต้องการกดใหม่ภายหลัง ให้เปิดใช้งานอีกครั้ง:
-            //     // btn.disabled = false;
-            // }, 3000);
+            let totalSize = file_count_size.reduce((sum, item) => sum + item.size, 0);
+            if (totalSize > 7) {
+                showAlert(`ขนาดไฟล์รวมทั้งหมด มีขนาดใหญ่เกินไป (สูงสุด 7MB)`, 'danger');
+                return;
+            }
 
             const formData = {
                 title: document.getElementById('taskTitle').value.trim(),
@@ -1471,7 +1377,7 @@ include 'check_session.php';
                 }
             });
 
-            console.log('Data to send:', formData);
+            //console.log('Data to send:', formData);
 
             // Show loading state
             const saveBtn = document.querySelector('.modal-footer .btn-primary');
