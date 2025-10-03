@@ -54,10 +54,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $uploadedFiles = [];
         $uploadedFiles_type = [];
+        $file_time = time();
         if (isset($_FILES['files'])) {
             foreach ($_FILES['files']['tmp_name'] as $index => $tmpName) {
                 if ($_FILES['files']['error'][$index] === UPLOAD_ERR_OK) {
-                    $fileName = time() . "_files_" . basename($_FILES['files']['name'][$index]);
+                    $fileName = $file_time . "_files_" . basename($_FILES['files']['name'][$index]);
                     $filePath = $targetDir . "/" . $fileName;
 
                     if (move_uploaded_file($tmpName, $filePath)) {
@@ -112,6 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         error_log("❌ move_uploaded_file failed: $tmpName -> $filePath");
                     }
                 }
+                $file_time++;
             }
         }
 
