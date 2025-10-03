@@ -1,0 +1,181 @@
+<?php
+session_start();
+require_once '../class/crud.class.php';
+require_once '../class/util.class.php';
+require_once '../class/encrypt.class.php';
+
+$object   = new CRUD();
+$util     = new Util();
+$Encrypt  = new Encrypt_data();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    date_default_timezone_set('Asia/Bangkok'); // ตั้งเวลาไทย
+    $date_time = date("Y-m-d H:i:s");
+
+    // รับค่าจาก FormData
+    $task_id         = isset($_POST['id']) ? trim($_POST['id']) : '';
+    $title           = isset($_POST['title']) ? trim($_POST['title']) : '';
+    $category        = isset($_POST['category']) ? trim($_POST['category']) : '';
+    $description     = isset($_POST['description']) ? trim($_POST['description']) : '';
+    $taskStatus      = isset($_POST['taskStatus']) ? trim($_POST['taskStatus']) : '';
+    $taskImportance  = isset($_POST['taskImportance']) ? trim($_POST['taskImportance']) : '';
+    $related_users   = isset($_POST['related_users']) ? $_POST['related_users'] : '[]';
+    $mentioned_users = isset($_POST['mentioned_users']) ? $_POST['mentioned_users'] : '[]';
+    $filesToDelete   = isset($_POST['filesToDelete']) ? $_POST['filesToDelete'] : '[]';
+
+    try {
+        // บันทึกลง DB (ใช้ class CRUD)
+        $table = 'tb_topics_c050968 ';
+        $fields = array(
+            'fd_topic_title' => $title,
+            'fd_topic_category' => $category,
+            'fd_topic_detail' => $description,
+            'fd_topic_mentioned' => $mentioned_users,
+            'fd_topic_status' => $taskStatus,
+            'fd_topic_importance' => $taskImportance,
+            'fd_topic_participant' => $related_users,
+            'fd_topic_updated_at' => $date_time
+        );
+        // print_r($fields);
+
+        $conditions = array(
+            'fd_topic_id' => $task_id,
+        );
+        $result = $object->Update_Data($table, $fields, $conditions);
+        // ===================
+        // อัพโหลดไฟล์
+        // ===================
+        $NameFolder = date("Y-m-d");
+        $baseDir = dirname(__DIR__); // ถอยขึ้นไปจาก topic_api
+        $targetDir = $baseDir . "/file_upload/" . $NameFolder;
+
+        if (!file_exists($targetDir)) {
+            mkdir($targetDir, 0777, true);
+        }
+
+        $uploadedFiles = [];
+        $uploadedFiles_type = [];
+        $file_time = time();
+        if (isset($_FILES['files'])) {
+            foreach ($_FILES['files']['tmp_name'] as $index => $tmpName) {
+                if ($_FILES['files']['error'][$index] === UPLOAD_ERR_OK) {
+                    $fileName = $file_time . "_files_" . basename($_FILES['files']['name'][$index]);
+                    $filePath = $targetDir . "/" . $fileName;
+
+                    if (move_uploaded_file($tmpName, $filePath)) {
+                        // เก็บ path
+                        $uploadedFiles[] = "file_upload/$NameFolder/$fileName";
+                        $name_filePath = "$NameFolder/$fileName";
+                        // ตรวจสอบประเภทไฟล์จาก MIME type หรือจากนามสกุลไฟล์
+                        $mime = $_FILES['files']['type'][$index];
+                        $ext  = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+
+                        $type = "other";
+                        if ($ext === "pdf") {
+                            $type = "pdf";
+                        } elseif (in_array($ext, ["doc", "docx"])) {
+                            $type = "word";
+                        } elseif (in_array($ext, ["xls", "xlsx"])) {
+                            $type = "excel";
+                        } elseif (in_array($ext, ["jpg", "jpeg"])) {
+                            $type = "jpg";
+                        } elseif ($ext === "png") {
+                            $type = "png";
+                        }
+                        // เก็บ type
+                        $uploadedFiles_type[] = $type;
+
+                        try {
+                            // save file info ลง DB ถ้าต้องการ
+                            $table = 'tb_topic_files_c050968 ';
+                            $fields = array(
+                                'fd_topic_id' => $task_id,
+                                'fd_file_path' => $name_filePath,
+                                'fd_file_type' => $type,
+                                'fd_file_active' => "1",
+                                'fd_file_created_at' => $date_time,
+                                'fd_file_updated_at' => $date_time
+                            );
+                            $object->Insert_data($table, $fields);
+                        } catch (Exception $e) {
+                            echo json_encode([
+                                "status"  => "error",
+                                "message" => $e->getMessage(),
+                                "x" => "files"
+                            ]);
+                        }
+                        // $object->insert("task_files", [
+                        //     "task_id"   => $task_id,
+                        //     "file_name" => $fileName,
+                        //     "file_path" => "file_upload/$NameFolder/$fileName",
+                        //     "uploaded_at" => $date_time
+                        // ]);
+                    } else {
+                        error_log("❌ move_uploaded_file failed: $tmpName -> $filePath");
+                    }
+                }
+                $file_time++; // เพิ่มเวลาเพื่อหลีกเลี่ยงชื่อไฟล์ซ้ำ
+            }
+        }
+
+        $table = 'tb_topic_files_c050968 ';
+
+        // Normalize $filesToDelete ให้เป็น array ของตัวเลข
+        if (!is_array($filesToDelete)) {
+            $raw = trim($filesToDelete);
+
+            // ถ้าเป็น JSON array เช่น "[17,18]"
+            if ((strpos($raw, '[') === 0) || (strpos($raw, '{') === 0)) {
+                $decoded = json_decode($raw, true);
+                if (is_array($decoded)) {
+                    $filesToDelete = $decoded;
+                } else {
+                    // ถ้า decode ไม่ได้ ให้ลบอักขระที่ไม่ใช่ตัวเลขหรือ comma
+                    $clean = preg_replace('/[^0-9,]/', '', $raw);
+                    $parts = array_filter(array_map('intval', explode(',', $clean)));
+                    $filesToDelete = $parts;
+                }
+            } elseif (preg_match('/array\s*\((.*)\)/i', $raw, $m)) {
+                // ถ้าเป็นรูปแบบ array(17,18)
+                $inner = $m[1];
+                $parts = preg_split('/\s*,\s*/', trim($inner));
+                $filesToDelete = array_map('intval', $parts);
+            } else {
+                // สมมติเป็นสตริงคั่นด้วย comma เช่น "17,18"
+                $parts = preg_split('/\s*,\s*/', $raw);
+                $filesToDelete = array_filter(array_map('intval', $parts));
+            }
+        }
+
+        foreach ($filesToDelete as $fileID) {
+            $fileID = intval($fileID);
+            if ($fileID <= 0) continue;
+
+            // อัพเดตสถานะไฟล์ในฐานข้อมูลเป็น inactive โดยใช้คอลัมน์ fd_file_id
+            $fields = array(
+                'fd_file_active' => "0",
+                'fd_file_updated_at' => $date_time
+            );
+            $conditions = array(
+                'fd_file_id' => $fileID,
+            );
+            $object->Update_Data($table, $fields, $conditions);
+        }
+
+        // ส่งกลับ
+        echo json_encode([
+            "status"  => "success",
+            "message" => "บันทึกแก้ไขสำเร็จ",
+        ]);
+    } catch (Exception $e) {
+        echo json_encode([
+            "status"  => "error",
+            "message" => $e->getMessage()
+        ]);
+    }
+} else {
+    echo json_encode([
+        "status"  => "error",
+        "message" => "Invalid request method"
+    ]);
+}
