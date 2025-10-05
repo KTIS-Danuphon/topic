@@ -222,18 +222,26 @@ include 'check_session.php';
                             </select>
                         </div>
 
-                        <!-- ความสำคัญ -->
-                        <div class="mb-3">
-                            <label for="taskImportance" class="form-label">
-                                <i class="bi bi-stars me-1"></i>ความสำคัญของงาน
+                        <!-- ความเร่งด่วน (จำนวนดาว) -->
+                        <div class="mb-3 row">
+                            <label class="form-label col-12">
+                                <i class="bi bi-speedometer2 me-1"></i>ความเร่งด่วน (1-5 ดาว) <span class="text-danger">*</span>
                             </label>
-                            <select class="form-select" id="taskImportance" required>
-                                <option value="" selected disabled>เลือกความสำคัญ</option>
-                                <option value="1">ต่ำ</option>
-                                <option value="2">ปานกลาง</option>
-                                <option value="3">สูง</option>
-                                <option value="4">สำคัญมาก</option>
-                            </select>
+                            <div class="col-12 col-md-6 d-flex justify-content-center align-items-center">
+                                <div id="taskImportance_stars" class="star-rating" data-value="3" aria-label="เลือกระดับความเร่งด่วน">
+                                    <button type="button" class="star" data-value="1" aria-label="1 ดาว">★</button>
+                                    <button type="button" class="star" data-value="2" aria-label="2 ดาว">★</button>
+                                    <button type="button" class="star" data-value="3" aria-label="3 ดาว">★</button>
+                                    <button type="button" class="star" data-value="4" aria-label="4 ดาว">★</button>
+                                    <button type="button" class="star" data-value="5" aria-label="5 ดาว">★</button>
+                                </div>
+                                <input type="hidden" id="taskImportance" value="3" required>
+                            </div>
+                            <div class="col-12 col-md-6 d-flex justify-content-center align-items-center">
+                                <div id="ratingLabel" class="rating-label level-3 small text-muted text-center">
+                                    ระดับปานกลาง (3 ดาว)
+                                </div>
+                            </div>
                         </div>
 
                         <!-- ไฟล์แนบ -->
@@ -593,7 +601,18 @@ include 'check_session.php';
                                 <span class="task-id"><i class="bi bi-hash me-1"></i>TASK-${new Date(task.created_at).getFullYear()}-${(task.id).toString().padStart(4, '0')}</span>
                                 <span class="category-badge"><i class="bi bi-code-slash me-1"></i>${getCategoryName(task.category)}</span>
                                 <span class="created-date"><i class="bi bi-calendar3 me-1"></i>${formatDate(task.created_at)}</span>
-                                <span class="priority-badge"><i class="bi bi-card-list me-1"></i>ความสำคัญ ${importance_score(task.importance)}</span>
+                                <span class="priority-badge"><i class="bi bi-speedometer2 me-1"></i>ความเร่งด่วน ${(() => {
+                                    const imp = parseInt(task.importance, 10) || 0;
+                                    let stars = '';
+                                    for (let i = 1; i <= 5; i++) {
+                                        if (i <= imp) {
+                                            stars += '<i class="bi bi-star-fill text-warning ms-1" aria-hidden="true"></i>';
+                                        } else {
+                                            stars += '<i class="bi bi-star text-muted ms-1" aria-hidden="true"></i>';
+                                        }
+                                    }
+                                    return stars;
+                                })()}</span>
                             </div>
                         </div>
                         <div class="card-body p-2">
@@ -754,18 +773,6 @@ include 'check_session.php';
                 document.getElementById('sidebar').classList.remove('show');
             }
         });
-
-        // ความสำคัญ
-        function importance_score(importance) {
-            const importances = {
-                '1': 'ต่ำ',
-                '2': 'ปานกลาง',
-                '3': 'สูง',
-                '4': 'สำคัญมาก',
-                '5': 'อื่นๆ'
-            };
-            return importances[importance] || 'อื่นๆ';
-        }
     </script>
     <!-- สคริปฟิลเตอร์ -->
 
@@ -832,6 +839,7 @@ include 'check_session.php';
             resetFileAttachments();
             hideMentionDropdown();
             hideUserDropdown();
+            updateStars(3); // รีเซ็ตดาวความสำคัญเป็น 3 ดาว
         }
 
         // User Management
@@ -1589,6 +1597,78 @@ include 'check_session.php';
                 }
             });
         }
+    </script>
+    <script>
+        const starContainer = document.getElementById('taskImportance_stars');
+        const stars = starContainer.querySelectorAll('.star');
+        const hiddenInput = document.getElementById('taskImportance');
+        const ratingLabel = document.getElementById('ratingLabel');
+        const taskForm = document.getElementById('taskForm');
+        const resultDisplay = document.getElementById('resultDisplay');
+        const resultText = document.getElementById('resultText');
+
+        const ratingLabels = {
+            1: 'ไม่เร่งด่วน (1 ดาว)',
+            2: 'ค่อนข้างน้อย (2 ดาว)',
+            3: 'ระดับปานกลาง (3 ดาว)',
+            4: 'ค่อนข้างเร่งด่วน (4 ดาว)',
+            5: 'เร่งด่วนมาก! (5 ดาว)'
+        };
+
+        // ฟังก์ชันอัพเดทดาว
+        function updateStars(value) {
+            stars.forEach((star, index) => {
+                if (index < value) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+
+            // อัพเดท label
+            ratingLabel.textContent = ratingLabels[value];
+            ratingLabel.className = 'rating-label level-' + value;
+
+            // อัพเดท hidden input
+            hiddenInput.value = value;
+            starContainer.setAttribute('data-value', value);
+        }
+
+        // เพิ่ม event listeners สำหรับดาว
+        stars.forEach(star => {
+            star.addEventListener('click', function() {
+                const value = parseInt(this.getAttribute('data-value'));
+                updateStars(value);
+            });
+
+            // Hover effect
+            star.addEventListener('mouseenter', function() {
+                const value = parseInt(this.getAttribute('data-value'));
+                stars.forEach((s, index) => {
+                    s.style.color = ''; // Clear inline style
+                    if (index < value) {
+                        s.classList.add('hover-active');
+                    } else {
+                        s.classList.remove('hover-active');
+                    }
+                });
+            });
+        });
+
+        // Reset เมื่อ mouse ออกจาก container
+        starContainer.addEventListener('mouseleave', function() {
+            // Clear hover effect
+            stars.forEach(s => {
+                s.style.color = '';
+                s.classList.remove('hover-active');
+            });
+            // กลับไปค่าเดิม
+            // const currentValue = parseInt(hiddenInput.value);
+            // updateStars(currentValue);
+        });
+
+        // ตั้งค่าเริ่มต้น 3 ดาว
+        updateStars(3);
     </script>
 </body>
 
