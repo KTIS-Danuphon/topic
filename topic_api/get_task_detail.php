@@ -38,7 +38,7 @@ try {
     $fields .= ',t1.fd_topic_created_by AS created_by, t2.fd_user_fullname AS fullname ';
     $fields .= ',t1.fd_topic_detail AS task_detail, t1.fd_topic_mentioned AS task_mentioned, t1.fd_topic_participant AS task_participant,t1.fd_topic_updated_at AS updated_at ';
     // ดึง task ทั้งหมด (หรือกรองตาม user ก็ได้)
-    if ($userStatus === "admin" || $userStatus === "Ex") {
+    if ($userStatus === "admin" || $userStatus === "executive") {
         // admin เห็นทุกงาน
         $where = 'WHERE fd_topic_private = "1" AND fd_topic_id = ' . $task_id;
     } else {

@@ -26,7 +26,7 @@ try {
     $table = 'tb_topics_c050968 t1 ';
     $fields = 'fd_topic_id AS id, fd_topic_title AS title, fd_topic_category AS category,fd_topic_status AS status,fd_topic_importance AS importance, fd_topic_created_at AS created_at ';
     // ดึง task ทั้งหมด (หรือกรองตาม user ก็ได้)
-    if ($userStatus === "admin" || $userStatus === "Ex") {
+    if ($userStatus === "admin" || $userStatus === "executive") {
         // admin เห็นทุกงาน
         $where = 'WHERE fd_topic_private = "1"  ';
     } else {
