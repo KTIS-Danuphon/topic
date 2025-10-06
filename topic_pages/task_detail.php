@@ -486,18 +486,6 @@ include 'check_session.php';
             }
         });
 
-        // ความสำคัญ
-        function importance_score(importance) {
-            const importances = {
-                '1': 'ต่ำ',
-                '2': 'ปานกลาง',
-                '3': 'สูง',
-                '4': 'สำคัญมาก',
-                '5': 'อื่นๆ'
-            };
-            return importances[importance] || 'อื่นๆ';
-        }
-
         // Global variables
         let users_list = []; //เก็บ id user ไว้โชว์ให้เลือก ผู้ใช้ ที่เกี่ยวข้อง
         // let mockTasks = [];
@@ -607,16 +595,22 @@ include 'check_session.php';
                     container.innerHTML = "";
 
                     // user ปัจจุบัน + เจ้าของงาน
-                    const currentUserId = <?= $_SESSION['user_id'] ?>; // ฝั่ง PHP
+                    // Use json_encode to safely inject PHP values into JS (preserves types and quoting)
+                    const currentUserId = <?= json_encode($_SESSION['user_id']) ?>; // ฝั่ง PHP (number/string)
+                    const currentStatus = <?= json_encode($_SESSION['user_status']) ?>; // ฝั่ง PHP (e.g. 'user','admin','executive')
                     const taskOwnerId = tasks.created_by; // จากข้อมูล task
-                    console.log(taskOwnerId, currentUserId);
+                    console.log('taskOwnerId, currentUserId, currentStatus ->', taskOwnerId, currentUserId, currentStatus);
 
-                    if (taskOwnerId == currentUserId) { // ถ้าเป็นเจ้าของ → ปิด overlay
+                    // Allow the task owner, admin, or executive to edit (hide overlay).
+                    if (taskOwnerId == currentUserId || ['admin', 'executive'].includes(currentStatus)) {
+                        // ถ้าเป็นเจ้าของ หรือ เป็น admin/ executive → ปิด overlay
                         overlay.style.display = "none";
-                    } else { // ถ้าไม่ใช่เจ้าของ → เปิด overlay
+                    } else {
+                        // ถ้าไม่ใช่เจ้าของ และไม่ใช่ admin/executive → เปิด overlay
                         overlay.style.display = "block";
                     }
-                  
+
+
                     updateUserTagsDisplay();
                     populateUserDropdown();
 
@@ -1028,10 +1022,10 @@ include 'check_session.php';
             // const inProgress = allTasks.filter(t => t.status === 'in-progress').length;
             // const completed = allTasks.filter(t => t.status === 'completed').length;
 
-            document.getElementById('totalTaskCount').textContent = "";
-            document.getElementById('pendingTaskCount').textContent = "";
-            document.getElementById('progressTaskCount').textContent = "";
-            document.getElementById('completedTaskCount').textContent = "";
+            // document.getElementById('totalTaskCount').textContent = "";
+            // document.getElementById('pendingTaskCount').textContent = "";
+            // document.getElementById('progressTaskCount').textContent = "";
+            // document.getElementById('completedTaskCount').textContent = "";
         }
 
         // Utility functions
